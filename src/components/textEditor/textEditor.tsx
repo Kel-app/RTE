@@ -1,7 +1,8 @@
-// components/RichTextEditor.tsx
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+
+// ProseMirror imports
 import { EditorState } from "prosemirror-state";
 import { Schema } from "prosemirror-model";
 import { EditorView } from "prosemirror-view";
@@ -10,12 +11,19 @@ import { addListNodes } from "prosemirror-schema-list";
 import { keymap } from "prosemirror-keymap";
 import { baseKeymap } from "prosemirror-commands";
 import { history, undo, redo } from "prosemirror-history";
+
+// 3rd party imports
 import { placeholder } from "@dear-rama/prosemirror-placeholder";
+
+// Custom imports
 import { fontSizeMark, textColorMark } from "./utils/text-style";
-import "prosemirror-view/style/prosemirror.css";
 import applyColor from "./utils/apply-color";
 import applyFontSize from "./utils/apply-font-size";
 import applyMarkCmd from "./utils/apply-mark-cmd";
+
+// Styles
+import "prosemirror-view/style/prosemirror.css";
+import "./output.css";
 
 export default function RichTextEditor() {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -132,9 +140,7 @@ export default function RichTextEditor() {
 
       <div
         ref={editorRef}
-        className={`flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 transition-all duration-200 ${
-          isFocused ? "border-2 border-transparent" : "border-2 border-gray-300"
-        } rounded-lg shadow-lg bg-white active:outline-none focus:outline-none active:border-none focus:border-none`}
+        className={`flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white active:outline-none focus:outline-none active:border-none focus:border-none`}
       />
     </div>
   );
