@@ -5,7 +5,8 @@
   "author": "Emonora",
   "license": "ISC",
   "scripts": {
-    "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist",
+    "build:min": "tsup src/index.ts --dts --format esm,cjs --out-dir dist/min --minify",
+    "build:full": "tsup src/index.ts --dts --format esm,cjs --out-dir dist",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -56,5 +57,15 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./min": {
+      "import": "./dist/index.esm.min.js",
+      "require": "./dist/index.cjs.min.js"
+    }
   }
 }
