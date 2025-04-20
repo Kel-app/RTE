@@ -1,6 +1,6 @@
 {
   "name": "@kel-app/rte",
-  "version": "0.1.0-alpha.1.3.1",
+  "version": "0.1.0-alpha.1.3.2",
   "description": "Kel's rich text editor (RTE)",
   "author": "Emonora",
   "license": "ISC",
@@ -11,7 +11,7 @@
   },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -58,13 +58,11 @@
     ]
   },
   "exports": {
-    ".": {
-      "import": "./dist/index.esm.js",
-      "require": "./dist/index.cjs.js"
-    },
-    "./min": {
-      "import": "./dist/index.esm.min.js",
-      "require": "./dist/index.cjs.min.js"
+    "exports": {
+      ".": {
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
+      }
     }
   }
 }

@@ -1,5 +1,9 @@
 # Kel RTE
 
+## Known Issues
+
+- The import doesn't work, and I have no idea why, so currently, you can't import the component.
+
 ## Getting Started
 
 This is the NPM package for Kel's rich text editor (RTE).
