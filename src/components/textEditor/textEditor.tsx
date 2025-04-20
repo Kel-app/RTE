@@ -30,6 +30,16 @@ export default function RichTextEditor() {
   const [view, setView] = useState<EditorView | null>(null);
   const [isFocused, setIsFocused] = useState(false);
 
+  const isDarkModeClass = document.documentElement.classList.contains("dark");
+  const isDarkModeMedia = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
+
+  let colorDefault =
+    isDarkModeClass === true || isDarkModeMedia === true
+      ? "#ffffff"
+      : "#000000";
+
   useEffect(() => {
     if (!editorRef.current) return;
 
@@ -84,11 +94,11 @@ export default function RichTextEditor() {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-gray-50 text-black">
+    <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black">
       <div
         className="
           fixed bottom-4 left-1/2 transform -translate-x-1/2
-          bg-white px-6 py-3 shadow-lg
+          bg-white dark:bg-black px-6 py-3 shadow-lg
           rounded-full flex items-center gap-3 z-50
         "
       >
@@ -107,7 +117,7 @@ export default function RichTextEditor() {
 
         <input
           type="color"
-          defaultValue="#000000"
+          defaultValue={colorDefault}
           onChange={(e) => applyColor(e.target.value, view)}
           className="w-8 h-8 p-0 border-none rounded-full cursor-pointer"
         />
@@ -140,7 +150,7 @@ export default function RichTextEditor() {
 
       <div
         ref={editorRef}
-        className={`flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white active:outline-none focus:outline-none active:border-none focus:border-none`}
+        className={`flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white dark:bg-black dark:text-white active:outline-none focus:outline-none active:border-none focus:border-none`}
       />
     </div>
   );

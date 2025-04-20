@@ -1,12 +1,12 @@
 {
   "name": "@kel-app/rte",
-  "version": "0.1.0-alpha.1.02",
+  "version": "0.1.0-alpha.1.1",
   "description": "Kel's rich text editor (RTE)",
   "author": "Emonora",
   "license": "ISC",
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist --minify",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 3000",
     "build-storybook": "storybook build"
   },
   "main": "dist/index.js",
