@@ -148,7 +148,7 @@ export default function RichTextEditor() {
 
       <div
         ref={editorRef}
-        className={`flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white dark:bg-black dark:text-white active:outline-none focus:outline-none active:border-none focus:border-none`}
+        className="flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white dark:bg-black dark:text-white active:outline-none focus:outline-none active:border-none focus:border-none"
       />
     </div>
   );
