@@ -23,24 +23,22 @@ import applyMarkCmd from "./utils/apply-mark-cmd";
 
 // Styles
 import "prosemirror-view/style/prosemirror.css";
-import "./output.css";
+import "./index.css";
 
 export default function RichTextEditor() {
   const editorRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<EditorView | null>(null);
   const [isFocused, setIsFocused] = useState(false);
-
-  const isDarkModeClass = document.documentElement.classList.contains("dark");
-  const isDarkModeMedia = window.matchMedia(
-    "(prefers-color-scheme: dark)"
-  ).matches;
-
-  let colorDefault =
-    isDarkModeClass === true || isDarkModeMedia === true
-      ? "#ffffff"
-      : "#000000";
+  const [colorDefault, setColorDefault] = useState("#000000");
 
   useEffect(() => {
+    const isDarkModeClass = document.documentElement.classList.contains("dark");
+    const isDarkModeMedia = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    setColorDefault(isDarkModeClass || isDarkModeMedia ? "#ffffff" : "#000000");
+
     if (!editorRef.current) return;
 
     const defaultSchema = new Schema({
