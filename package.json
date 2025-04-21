@@ -1,6 +1,6 @@
 {
   "name": "@kel-app/rte",
-  "version": "0.1.0-alpha.1.4.1",
+  "version": "0.1.0-alpha.1.4.2",
   "description": "Kel's rich text editor (RTE)",
   "author": "Emonora",
   "license": "ISC",
@@ -17,6 +17,7 @@
   "type": "module",
   "dependencies": {
     "@dear-rama/prosemirror-placeholder": "^2.0.4",
+    "@rollup/plugin-terser": "^0.4.4",
     "@tailwindcss/cli": "^4.1.4",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-history": "^1.4.1",

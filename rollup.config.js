@@ -1,13 +1,15 @@
 import postcss from "rollup-plugin-postcss";
 import typescript from "rollup-plugin-typescript2";
 import typescriptCompiler from "typescript";
+import terser from "@rollup/plugin-terser";
 
 export default {
   input: "src/index.ts",
   output: [
     {
-      file: "dist/index.js",
+      file: "dist/index.min.js",
       format: "esm",
+      plugins: [terser()],
     },
   ],
   plugins: [
@@ -19,7 +21,7 @@ export default {
     postcss({
       extract: true,
       minimize: true,
-      sourceMap: true,
+      sourceMap: false,
     }),
   ],
 };
