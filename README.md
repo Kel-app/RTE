@@ -2,7 +2,7 @@
 
 ## Known Issues
 
-- The import doesn't work, and I have no idea why, so currently, you can't import the component.
+- The styles don't seem to be working properly.
 
 ## Getting Started
 
@@ -24,4 +24,4 @@ const App = () => {
 
 ## Contributing
 
-Contributions are not being accepted at the moment, due to the lack of an official version of the package.
+Contributions are welcome!
