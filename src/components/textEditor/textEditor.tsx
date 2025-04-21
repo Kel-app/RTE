@@ -23,7 +23,7 @@ import applyMarkCmd from "./utils/apply-mark-cmd";
 
 // Styles
 import "prosemirror-view/style/prosemirror.css";
-import "./index.css";
+import "../../../dist/index.css";
 
 export default function RichTextEditor() {
   const editorRef = useRef<HTMLDivElement>(null);

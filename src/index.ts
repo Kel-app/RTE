@@ -1,3 +1,3 @@
-import "./components/textEditor/index.css";
+import "../dist/index.css";
 
 export { default as RTE } from "./components/textEditor/textEditor";

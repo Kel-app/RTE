@@ -1,19 +1,17 @@
 {
   "name": "@kel-app/rte",
-  "version": "0.1.0-alpha.1.3.4.2",
+  "version": "0.1.0-alpha.1.3.4.3",
   "description": "Kel's rich text editor (RTE)",
   "author": "Emonora",
   "license": "ISC",
   "scripts": {
-    "build": "tsup src/index.ts --dts --format esm,cjs --out-dir dist --minify",
-    "storybook": "storybook dev -p 3000",
-    "build-storybook": "storybook build"
+    "build": "rollup -c"
   },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist/*"
   ],
   "dependencies": {
     "@dear-rama/prosemirror-placeholder": "^2.0.4",
@@ -27,19 +25,10 @@
     "prosemirror-state": "^1.4.3",
     "prosemirror-view": "^1.39.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "tsup": "^8.4.0"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@storybook/addon-essentials": "^8.6.12",
-    "@storybook/addon-interactions": "^8.6.12",
-    "@storybook/addon-onboarding": "^8.6.12",
-    "@storybook/addon-webpack5-compiler-swc": "^3.0.0",
-    "@storybook/blocks": "^8.6.12",
-    "@storybook/react": "^8.6.12",
-    "@storybook/react-webpack5": "^8.6.12",
-    "@storybook/test": "^8.6.12",
     "@swc/core": "^1.11.21",
     "@tailwindcss/postcss": "^4.1.4",
     "@types/node": "^20.17.30",
@@ -50,14 +39,10 @@
     "eslint-config-next": "15.3.1",
     "eslint-plugin-storybook": "^0.12.0",
     "postcss": "^8.5.3",
-    "storybook": "^8.6.12",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-typescript2": "^0.36.0",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3"
-  },
-  "eslintConfig": {
-    "extends": [
-      "plugin:storybook/recommended"
-    ]
   },
   "exports": {
     ".": {
