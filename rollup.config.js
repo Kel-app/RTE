@@ -4,10 +4,12 @@ import typescriptCompiler from "typescript";
 
 export default {
   input: "src/index.ts",
-  output: {
-    file: "dist/index.js",
-    format: "esm",
-  },
+  output: [
+    {
+      file: "dist/index.js",
+      format: "esm",
+    },
+  ],
   plugins: [
     typescript({
       tsconfig: "./tsconfig.json",

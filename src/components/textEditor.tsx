@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useRef, useState } from "react";
 
 // ProseMirror imports
@@ -23,7 +21,7 @@ import applyMarkCmd from "./utils/apply-mark-cmd";
 
 // Styles
 import "prosemirror-view/style/prosemirror.css";
-import "../../../dist/index.css";
+import "../index.css";
 
 export default function RichTextEditor() {
   const editorRef = useRef<HTMLDivElement>(null);
