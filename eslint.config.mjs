@@ -9,6 +9,7 @@ const eslintConfig = [
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+      allowImportingTsExtensions: "on",
     },
   },
 ];

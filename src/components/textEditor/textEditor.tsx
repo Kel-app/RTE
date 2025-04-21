@@ -93,13 +93,7 @@ export default function RichTextEditor() {
 
   return (
     <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black">
-      <div
-        className="
-          fixed bottom-4 left-1/2 transform -translate-x-1/2
-          bg-white dark:bg-black px-6 py-3 shadow-lg
-          rounded-full flex items-center gap-3 z-50
-        "
-      >
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full flex items-center gap-3 z-50">
         <select
           onChange={(e) => applyFontSize(e.target.value, view)}
           defaultValue="16px"

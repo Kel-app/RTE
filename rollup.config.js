@@ -4,23 +4,20 @@ import typescriptCompiler from "typescript";
 
 export default {
   input: "src/index.ts",
-  output: [
-    {
-      file: "dist/index.js",
-      format: "cjs",
-    },
-    {
-      file: "dist/index.mjs",
-      format: "es",
-    },
-  ],
+  output: {
+    file: "dist/index.js",
+    format: "esm",
+  },
   plugins: [
     typescript({
+      tsconfig: "./tsconfig.json",
       typescript: typescriptCompiler,
+      sourceMap: true,
     }),
     postcss({
-      modules: true,
-      namedExports: true,
+      extract: true,
+      minimize: true,
+      sourceMap: true,
     }),
   ],
 };
