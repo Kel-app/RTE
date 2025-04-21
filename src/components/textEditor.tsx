@@ -35,7 +35,7 @@ export default function RichTextEditor() {
       "(prefers-color-scheme: dark)"
     ).matches;
 
-    setColorDefault(isDarkModeClass || isDarkModeMedia ? "#ffffff" : "#000000");
+    setColorDefault(isDarkModeClass || isDarkModeMedia ? "#000000" : "#ffffff");
 
     if (!editorRef.current) return;
 
@@ -90,12 +90,12 @@ export default function RichTextEditor() {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black">
+    <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white">
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full flex items-center gap-3 z-50">
         <select
           onChange={(e) => applyFontSize(e.target.value, view)}
           defaultValue="16px"
-          className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300"
+          className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 text-black"
         >
           <option value="12px">12px</option>
           <option value="14px">14px</option>
@@ -114,25 +114,25 @@ export default function RichTextEditor() {
 
         <button
           onClick={() => applyMarkCmd("strong", view)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300"
+          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
         >
           Bold
         </button>
         <button
           onClick={() => applyMarkCmd("em", view)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300"
+          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
         >
           Italic
         </button>
         <button
           onClick={() => view && undo(view.state, view.dispatch)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300"
+          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
         >
           Undo
         </button>
         <button
           onClick={() => view && redo(view.state, view.dispatch)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300"
+          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
         >
           Redo
         </button>
