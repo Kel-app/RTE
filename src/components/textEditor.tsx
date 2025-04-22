@@ -35,7 +35,7 @@ export default function RichTextEditor() {
       "(prefers-color-scheme: dark)"
     ).matches;
 
-    setColorDefault(isDarkModeClass || isDarkModeMedia ? "#000000" : "#ffffff");
+    setColorDefault(isDarkModeMedia || isDarkModeClass ? "#ffffff" : "#000000");
 
     if (!editorRef.current) return;
 
