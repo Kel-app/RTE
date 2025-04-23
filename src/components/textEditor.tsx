@@ -30,12 +30,11 @@ export default function RichTextEditor() {
   const [colorDefault, setColorDefault] = useState("#000000");
 
   useEffect(() => {
-    const isDarkModeClass = document.documentElement.classList.contains("dark");
     const isDarkModeMedia = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
 
-    setColorDefault(isDarkModeMedia || isDarkModeClass ? "#ffffff" : "#000000");
+    setColorDefault(isDarkModeMedia ? "#ffffff" : "#000000");
 
     if (!editorRef.current) return;
 
