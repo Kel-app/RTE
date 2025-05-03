@@ -32,6 +32,8 @@ import "@kel-app/rte/dist/index.css";
 
 ## Usage
 
+> Note: This works for both pages and app router.
+
 ```tsx
 "use client";
 

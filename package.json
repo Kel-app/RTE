@@ -17,8 +17,6 @@
   "type": "module",
   "dependencies": {
     "@dear-rama/prosemirror-placeholder": "^2.0.4",
-    "@rollup/plugin-terser": "^0.4.4",
-    "@tailwindcss/cli": "^4.1.4",
     "cssnano": "^7.0.6",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-history": "^1.4.1",
@@ -45,7 +43,9 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-typescript2": "^0.36.0",
     "tailwindcss": "^4.1.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@tailwindcss/cli": "^4.1.4"
   },
   "exports": {
     ".": {
