@@ -1,6 +1,6 @@
 {
   "name": "@kel-app/rte",
-  "version": "0.1.0-alpha.1.5.2",
+  "version": "0.1.0-alpha.1.5.3",
   "description": "Kel's rich text editor (RTE)",
   "author": "Emonora",
   "license": "ISC",
@@ -55,6 +55,10 @@
     "./dist/index.css": {
       "import": "./dist/index.min.css",
       "require": "./dist/index.min.css"
+    },
+    "./dist/index.d.ts": {
+      "import": "./dist/index.d.ts",
+      "require": "./dist/index.d.ts"
     }
   }
 }
