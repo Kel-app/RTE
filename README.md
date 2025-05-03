@@ -2,7 +2,9 @@
 
 ## Known Issues
 
-None at the moment.
+- The editor doesn't automatically change font size when the user changes the font size in the toolbar. (#1)
+- The editor doesn't automatically change the color when the user changes the color in the toolbar. (#2)
+- The editor doesn't have the right color as the default color when using dark mode. (#3)
 
 ## Getting Started
 
