@@ -27,9 +27,17 @@ export default function RichTextEditor() {
   const editorRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<EditorView | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [defaultColor, setDefaultColor] = useState("#000000");
 
   useEffect(() => {
     if (!editorRef.current) return;
+
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    if (prefersDark) {
+      setDefaultColor("#ffffff");
+    }
 
     const defaultSchema = new Schema({
       nodes: addListNodes(basicSchema.spec.nodes, "paragraph block*", "block"),
@@ -99,7 +107,7 @@ export default function RichTextEditor() {
 
         <input
           type="color"
-          defaultValue={"#000000"}
+          defaultValue={defaultColor}
           onChange={(e) => applyColor(e.target.value, view)}
           className="w-8 h-8 p-0 border-none cursor-pointer"
         />
