@@ -30,6 +30,14 @@ Pages Router for Next.js:
 import "@kel-app/rte/dist/index.css";
 ```
 
+## Setting up themes
+
+!! This isn't required in some setups for some reason. !!
+
+To implement proper theming for the component. You will need to use next themes.
+
+> Note: While you can import the theme provider from the `next-themes` package directly, it is recommended to make your own component to wrap the theme provider to prevent hydration issues.
+
 ## Usage
 
 > Note: This works for both pages and app router.
