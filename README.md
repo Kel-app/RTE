@@ -2,8 +2,6 @@
 
 ## Known Issues
 
-- The editor doesn't have the right color as the default color when using dark mode. (#3)
-
 ## Getting Started
 
 This is the NPM package for Kel's rich text editor (RTE).
@@ -32,9 +30,7 @@ import "@kel-app/rte/dist/index.css";
 
 ## Setting up themes
 
-!! This isn't required in some setups for some reason. !!
-
-To implement proper theming for the component. You will need to use next themes.
+To implement proper theming for the component. You will need to use next themes. (You can also implement your own theme provider).
 
 > Note: While you can import the theme provider from the `next-themes` package directly, it is recommended to make your own component to wrap the theme provider to prevent hydration issues.
 
