@@ -1,6 +1,6 @@
 {
   "name": "@kel-app/rte",
-  "version": "0.1.0-alpha.2.1-50625",
+  "version": "0.1.0-alpha.2.1-51125",
   "description": "Kel's rich text editor (RTE)",
   "author": "Emonora",
   "license": "ISC",
@@ -17,7 +17,6 @@
   "type": "module",
   "dependencies": {
     "@dear-rama/prosemirror-placeholder": "^2.0.4",
-    "cssnano": "^7.0.6",
     "prosemirror-commands": "^1.7.1",
     "prosemirror-history": "^1.4.1",
     "prosemirror-keymap": "^1.2.2",
@@ -43,7 +42,8 @@
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "@tailwindcss/cli": "^4.1.4"
+    "@tailwindcss/cli": "^4.1.4",
+    "cssnano": "^7.0.6"
   },
   "exports": {
     ".": {
