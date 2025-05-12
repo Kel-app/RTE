@@ -32,6 +32,15 @@ export default function RichTextEditor() {
   useEffect(() => {
     if (!editorRef.current) return;
 
+    const theme = document.documentElement.classList.contains("dark");
+    if (!theme) {
+      document.documentElement.classList.remove("dark");
+      setDefaultColor("#000000");
+    } else {
+      document.documentElement.classList.add("dark");
+      setDefaultColor("#ffffff");
+    }
+
     const defaultSchema = new Schema({
       nodes: addListNodes(basicSchema.spec.nodes, "paragraph block*", "block"),
       marks: basicSchema.spec.marks.append({
