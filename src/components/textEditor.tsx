@@ -35,7 +35,7 @@ export default function RichTextEditor() {
     const el = document.querySelector(".empty-node");
 
     if (el) {
-      const text_box = window.getComputedStyle(el);
+      const text_box = getComputedStyle(el);
       const color = text_box.color;
       if (color == "rgb(255, 255, 255)") {
         setDefaultColor("#ffffff");
