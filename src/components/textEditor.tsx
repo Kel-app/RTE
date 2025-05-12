@@ -33,10 +33,10 @@ export default function RichTextEditor() {
     if (!editorRef.current) return;
 
     const theme = document.documentElement.classList.toggle("dark");
-    if (!theme) {
-      setDefaultColor("#000000");
-    } else {
+    if (theme) {
       setDefaultColor("#ffffff");
+    } else {
+      setDefaultColor("#000000");
     }
 
     const defaultSchema = new Schema({
