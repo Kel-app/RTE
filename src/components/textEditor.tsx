@@ -32,12 +32,10 @@ export default function RichTextEditor() {
   useEffect(() => {
     if (!editorRef.current) return;
 
-    const theme = document.documentElement.classList.contains("dark");
+    const theme = document.documentElement.classList.toggle("dark");
     if (!theme) {
-      document.documentElement.classList.remove("dark");
       setDefaultColor("#000000");
     } else {
-      document.documentElement.classList.add("dark");
       setDefaultColor("#ffffff");
     }
 
