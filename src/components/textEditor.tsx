@@ -32,11 +32,17 @@ export default function RichTextEditor() {
   useEffect(() => {
     if (!editorRef.current) return;
 
-    const theme = document.documentElement.classList.toggle("dark");
-    if (theme) {
-      setDefaultColor("#ffffff");
-    } else {
-      setDefaultColor("#000000");
+    const el = document.querySelector(".empty-node");
+
+    if (el) {
+      const color = window.getComputedStyle(el).color;
+      if (color == "rgb(255, 255, 255)") {
+        setDefaultColor("#ffffff");
+      } else if (color == "rgb(0, 0, 0)") {
+        setDefaultColor("#000000");
+      } else {
+        setDefaultColor(color);
+      }
     }
 
     const defaultSchema = new Schema({
