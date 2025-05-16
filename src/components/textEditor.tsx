@@ -32,19 +32,30 @@ export default function RichTextEditor() {
   useEffect(() => {
     if (!editorRef.current) return;
 
-    const el = document.querySelector(".empty-node");
+    setTimeout(() => {
+      const el = document.querySelector(".empty-node");
 
-    if (el) {
-      const text_box = getComputedStyle(el);
-      const color = text_box.color;
-      if (color == "rgb(255, 255, 255)") {
-        setDefaultColor("#ffffff");
-      } else if (color == "rgb(0, 0, 0)") {
-        setDefaultColor("#000000");
+      if (el) {
+        const style = getComputedStyle(el);
+        const color = style.color;
+
+        const rgbRegex = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/;
+        const match = color.match(rgbRegex);
+
+        if (match) {
+          const [_, r, g, b] = match;
+          console.log(`Red: ${r}, Green: ${g}, Blue: ${b}`);
+
+          if (r === "0" && g === "0" && b === "0") {
+            setDefaultColor("#000000");
+          } else if (r === "255" && g === "255" && b === "255") {
+            setDefaultColor("#FFFFFF");
+          }
+        }
       } else {
-        setDefaultColor(color);
+        console.error("Element with class 'empty-node' not found.");
       }
-    }
+    }, 50);
 
     const defaultSchema = new Schema({
       nodes: addListNodes(basicSchema.spec.nodes, "paragraph block*", "block"),
