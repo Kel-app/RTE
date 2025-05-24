@@ -12,50 +12,37 @@ import { history, undo, redo } from "prosemirror-history";
 
 // 3rd party imports
 import { placeholder } from "@dear-rama/prosemirror-placeholder";
+import { useTheme } from "next-themes";
 
 // Custom imports
 import { fontSizeMark, textColorMark } from "./utils/text-style";
 import applyColor from "./utils/apply-color";
 import applyFontSize from "./utils/apply-font-size";
 import applyMarkCmd from "./utils/apply-mark-cmd";
+import switchTheme from "./utils/switch-theme";
 
 // Styles
 import "prosemirror-view/style/prosemirror.css";
 import "../index.css";
+
+// Components
+import { Switch } from "./ui/switch";
 
 export default function RichTextEditor() {
   const editorRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<EditorView | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [defaultColor, setDefaultColor] = useState("#000000");
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     if (!editorRef.current) return;
 
-    setTimeout(() => {
-      const el = document.querySelector(".empty-node");
-
-      if (el) {
-        const style = getComputedStyle(el);
-        const color = style.color;
-
-        const rgbRegex = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/;
-        const match = color.match(rgbRegex);
-
-        if (match) {
-          const [_, r, g, b] = match;
-          console.log(`Red: ${r}, Green: ${g}, Blue: ${b}`);
-
-          if (r === "0" && g === "0" && b === "0") {
-            setDefaultColor("#000000");
-          } else if (r === "255" && g === "255" && b === "255") {
-            setDefaultColor("#FFFFFF");
-          }
-        }
-      } else {
-        console.error("Element with class 'empty-node' not found.");
-      }
-    }, 50);
+    if (theme === "dark") {
+      setDefaultColor("#FFFFFF");
+    } else {
+      setDefaultColor("#000000");
+    }
 
     const defaultSchema = new Schema({
       nodes: addListNodes(basicSchema.spec.nodes, "paragraph block*", "block"),
@@ -109,6 +96,13 @@ export default function RichTextEditor() {
 
   return (
     <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white">
+      <div className="fixed top-4 right-4">
+        <Switch
+          id="theme-switch"
+          onCheckedChange={(checked) => switchTheme(theme, setTheme)}
+        />
+        <label htmlFor="theme-switch">Toggle theme</label>
+      </div>
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full flex items-center gap-3 z-50">
         <select
           onChange={(e) => applyFontSize(e.target.value, view)}

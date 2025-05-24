@@ -26,4 +26,5 @@ export default {
       sourceMap: false,
     }),
   ],
+  external: ["react", "react-dom", "next-themes"],
 };

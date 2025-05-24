@@ -6,7 +6,7 @@
 
 This is the NPM package for Kel's rich text editor (RTE).
 
-Requires: React 19 or higher, tailwindcss 4.1 or higher.
+Requires: React 19 or higher, tailwindcss 4.1 or higher, and next.js. (more frameworks coming soon)
 
 ```bash
 npm install @kel-app/rte
