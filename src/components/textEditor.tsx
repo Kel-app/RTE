@@ -119,7 +119,9 @@ export default function RichTextEditor() {
       <div className="fixed top-4 right-4">
         <Switch
           id="theme-switch"
-          onCheckedChange={(checked) => switchTheme(theme, setTheme)}
+          onCheckedChange={(checked) =>
+            switchTheme(theme, setTheme, setDefaultColor)
+          }
         >
           <Moon />
         </Switch>
