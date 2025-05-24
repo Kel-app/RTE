@@ -27,6 +27,7 @@ import "../index.css";
 
 // Components
 import { Switch } from "./ui/switch";
+import { Moon } from "lucide-react";
 
 export default function RichTextEditor() {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -62,12 +63,6 @@ export default function RichTextEditor() {
         console.error("Element with class 'empty-node' not found.");
       }
     }, 50);
-
-    if (theme === "dark") {
-      setDefaultColor("#FFFFFF");
-    } else {
-      setDefaultColor("#000000");
-    }
 
     const defaultSchema = new Schema({
       nodes: addListNodes(basicSchema.spec.nodes, "paragraph block*", "block"),
@@ -125,8 +120,9 @@ export default function RichTextEditor() {
         <Switch
           id="theme-switch"
           onCheckedChange={(checked) => switchTheme(theme, setTheme)}
-        />
-        <label htmlFor="theme-switch">Toggle theme</label>
+        >
+          <Moon />
+        </Switch>
       </div>
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full flex items-center gap-3 z-50">
         <select
