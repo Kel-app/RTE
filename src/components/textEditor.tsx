@@ -38,6 +38,31 @@ export default function RichTextEditor() {
   useEffect(() => {
     if (!editorRef.current) return;
 
+    setTimeout(() => {
+      const el = document.querySelector(".empty-node");
+
+      if (el) {
+        const style = getComputedStyle(el);
+        const color = style.color;
+
+        const rgbRegex = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/;
+        const match = color.match(rgbRegex);
+
+        if (match) {
+          const [_, r, g, b] = match;
+          console.log(`Red: ${r}, Green: ${g}, Blue: ${b}`);
+
+          if (r === "0" && g === "0" && b === "0") {
+            setDefaultColor("#000000");
+          } else if (r === "255" && g === "255" && b === "255") {
+            setDefaultColor("#FFFFFF");
+          }
+        }
+      } else {
+        console.error("Element with class 'empty-node' not found.");
+      }
+    }, 50);
+
     if (theme === "dark") {
       setDefaultColor("#FFFFFF");
     } else {
