@@ -1,12 +1,18 @@
 import { EditorView } from "prosemirror-view";
+import userPrompt from "./promptUser/prompt";
+
+let customSize: string | null = null;
 
 const applyFontSize = (size: string, view: EditorView | null) => {
   if (!view) return;
 
+  const handleConfirm = (customSizeFromUser?: string) => {
+    customSize = customSizeFromUser;
+    return customSize;
+  };
+
   if (size === "custom") {
-    const customSize = prompt(
-      "Enter custom font size (e.g., 16px, 23px, etc.):"
-    );
+    userPrompt((customSize: string) => handleConfirm(customSize));
 
     if (customSize) {
       let customSizeCheck = customSize.trim();
