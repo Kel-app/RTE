@@ -11,7 +11,11 @@ import {
 import React, { useState } from "react";
 import { Input } from "~/components/ui/input";
 
-export default function UserPrompt(onConfirm) {
+interface UserPromptProps {
+  onConfirm: (value: string) => void;
+}
+
+export default function UserPrompt({ onConfirm }: UserPromptProps) {
   const [open, setOpen] = useState(true);
   const [customSize, setCustomSize] = useState("");
 
@@ -22,7 +26,7 @@ export default function UserPrompt(onConfirm) {
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-white dark:bg-black text-black dark:text-white">
         <AlertDialogHeader>
           <AlertDialogTitle>Custom Font Size</AlertDialogTitle>
           <AlertDialogDescription>

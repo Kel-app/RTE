@@ -1,22 +1,14 @@
 import { EditorView } from "prosemirror-view";
-import userPrompt from "./promptUser/prompt";
+import promptForCustomSize from "./promptUser/function";
 
-let customSize: string | null = null;
-
-const applyFontSize = (size: string, view: EditorView | null) => {
+async function applyFontSize(size: string, view: EditorView | null) {
   if (!view) return;
 
-  const handleConfirm = (customSizeFromUser?: string) => {
-    customSize = customSizeFromUser;
-    return customSize;
-  };
-
   if (size === "custom") {
-    userPrompt((customSize: string) => handleConfirm(customSize));
+    try {
+      const customSize = await promptForCustomSize();
+      let customSizeCheck = customSize.trim().toLowerCase();
 
-    if (customSize) {
-      let customSizeCheck = customSize.trim();
-      customSizeCheck.toLowerCase();
       if (/^\d+px$/.test(customSizeCheck)) {
         size = customSizeCheck;
       } else {
@@ -24,8 +16,9 @@ const applyFontSize = (size: string, view: EditorView | null) => {
           "Invalid custom font size format. Use '16px', '23px', etc."
         );
       }
-    } else {
-      throw new Error("Custom font size not provided.");
+    } catch (error) {
+      console.error(error);
+      return;
     }
   }
 
@@ -43,6 +36,6 @@ const applyFontSize = (size: string, view: EditorView | null) => {
 
   dispatch(tr);
   view.focus();
-};
+}
 
 export default applyFontSize;
