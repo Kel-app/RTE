@@ -132,6 +132,7 @@ export default function RichTextEditor() {
           defaultValue="16px"
           className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 text-black"
         >
+          <option value="custom">Custom Font Size</option>
           <option value="12px">12px</option>
           <option value="14px">14px</option>
           <option value="16px">16px</option>
