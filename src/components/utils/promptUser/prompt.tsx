@@ -17,9 +17,12 @@ interface UserPromptProps {
 
 export default function UserPrompt({ onConfirm }: UserPromptProps) {
   const [open, setOpen] = useState(true);
-  const [customSize, setCustomSize] = useState("");
+  const [customSize, setCustomSize] = useState("23px");
 
   const handleConfirm = () => {
+    if (!customSize) {
+      setCustomSize("23px"); // Default value if input is empty
+    }
     onConfirm(customSize);
     setOpen(false);
   };
