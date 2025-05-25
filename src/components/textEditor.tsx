@@ -116,7 +116,7 @@ export default function RichTextEditor() {
 
   return (
     <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white">
-      <div className="fixed top-4 right-4">
+      <div className="fixed top-4 right-4 w-20 h-20 bg-black dark:bg-white rounded-full flex items-center justify-center shadow-lg z-50">
         <Switch
           id="theme-switch"
           onCheckedChange={(checked) =>
