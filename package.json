@@ -1,11 +1,11 @@
 {
   "name": "@kel-app/rte",
-  "version": "0.1.0-alpha.2.5.3-52425",
+  "version": "0.1.0-alpha.3-52525",
   "description": "Kel's rich text editor (RTE)",
   "author": "Emonora",
   "license": "ISC",
   "scripts": {
-    "build": "rollup -c"
+    "build": "tailwindcss -i ./src/globals.css -o ./src/index.css && rollup -c"
   },
   "main": "dist/index.min.js",
   "module": "dist/index.min.js",
@@ -17,6 +17,8 @@
   "type": "module",
   "dependencies": {
     "@dear-rama/prosemirror-placeholder": "^2.0.4",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

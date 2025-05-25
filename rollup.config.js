@@ -26,5 +26,5 @@ export default {
       sourceMap: false,
     }),
   ],
-  external: ["react", "react-dom", "next-themes"],
+  external: ["react", "react-dom", "next-themes", "lucide-react"],
 };
