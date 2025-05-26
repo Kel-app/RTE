@@ -27,7 +27,9 @@ import "../index.css";
 
 // Components
 import { Switch } from "./ui/switch";
-import { Moon } from "lucide-react";
+import { Moon, Bold, Italic } from "lucide-react";
+import { Toggle } from "./ui/toggle";
+
 
 export default function RichTextEditor() {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -148,27 +150,27 @@ export default function RichTextEditor() {
           className="w-8 h-8 p-0 border-none cursor-pointer"
         />
 
-        <button
+        <Toggle
           onClick={() => applyMarkCmd("strong", view)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
+          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
         >
-          Bold
-        </button>
-        <button
+          <Bold />
+        </Toggle>
+        <Toggle
           onClick={() => applyMarkCmd("em", view)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
+          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
         >
-          Italic
-        </button>
+          <Italic />
+        </Toggle>
         <button
           onClick={() => view && undo(view.state, view.dispatch)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
+          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
         >
           Undo
         </button>
         <button
           onClick={() => view && redo(view.state, view.dispatch)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black"
+          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
         >
           Redo
         </button>
