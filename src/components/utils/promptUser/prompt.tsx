@@ -21,7 +21,7 @@ export default function UserPrompt({ onConfirm }: UserPromptProps) {
 
   const handleConfirm = () => {
     if (!customSize) {
-      setCustomSize("23px"); // Default value if input is empty
+      setCustomSize("23px");
     }
     onConfirm(customSize);
     setOpen(false);
