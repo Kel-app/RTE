@@ -4,7 +4,6 @@ import UserPrompt from "./prompt";
 
 export default function promptForCustomSize(): Promise<string> {
   return new Promise((resolve) => {
-    // Create a temporary container
     const container = document.createElement("div");
     document.body.appendChild(container);
 
