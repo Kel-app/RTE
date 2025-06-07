@@ -763,7 +763,11 @@
   }
   .data-\[state\=closed\]\:animate-out {
     &[data-state="closed"] {
+<<<<<<< HEAD
       animation: exit var(--tw-animation-duration,var(--tw-duration,.15s))var(--tw-ease,ease)var(--tw-animation-delay,0s)var(--tw-animation-iteration-count,1)var(--tw-animation-direction,normal)var(--tw-animation-fill-mode,none);
+=======
+      animation: exit var(--tw-animation-duration,var(--tw-duration,.15s))var(--tw-ease,ease)var(--tw-animation-delay,0s)var(--tw-animation-iteration-count,1)var(--tw-animation-direction,normal)var(--tw-animation-fill-mode,forwards);
+>>>>>>> ce30c637dcc6cdaeada5f50cf8a0f168ce7742fa
     }
   }
   .data-\[state\=closed\]\:fade-out-0 {
@@ -790,7 +794,11 @@
   }
   .data-\[state\=open\]\:animate-in {
     &[data-state="open"] {
+<<<<<<< HEAD
       animation: enter var(--tw-animation-duration,var(--tw-duration,.15s))var(--tw-ease,ease)var(--tw-animation-delay,0s)var(--tw-animation-iteration-count,1)var(--tw-animation-direction,normal)var(--tw-animation-fill-mode,none);
+=======
+      animation: enter var(--tw-animation-duration,var(--tw-duration,.15s))var(--tw-ease,ease)var(--tw-animation-delay,0s)var(--tw-animation-iteration-count,1)var(--tw-animation-direction,normal)var(--tw-animation-fill-mode,forwards);
+>>>>>>> ce30c637dcc6cdaeada5f50cf8a0f168ce7742fa
     }
   }
   .data-\[state\=open\]\:fade-in-0 {
@@ -975,7 +983,11 @@
 @property --tw-animation-fill-mode {
   syntax: "*";
   inherits: false;
+<<<<<<< HEAD
   initial-value: none;
+=======
+  initial-value: forwards;
+>>>>>>> ce30c637dcc6cdaeada5f50cf8a0f168ce7742fa
 }
 @property --tw-animation-iteration-count {
   syntax: "*";
@@ -1342,7 +1354,11 @@
       --tw-animation-delay: 0s;
       --tw-animation-direction: normal;
       --tw-animation-duration: initial;
+<<<<<<< HEAD
       --tw-animation-fill-mode: none;
+=======
+      --tw-animation-fill-mode: forwards;
+>>>>>>> ce30c637dcc6cdaeada5f50cf8a0f168ce7742fa
       --tw-animation-iteration-count: 1;
       --tw-enter-opacity: 1;
       --tw-enter-rotate: 0;

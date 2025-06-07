@@ -1,6 +1,10 @@
 {
   "name": "@kel-app/rte",
+<<<<<<< HEAD
   "version": "0.1.0-alpha.3.1-60725",
+=======
+  "version": "0.1.0-alpha.3.1.1-60625",
+>>>>>>> ce30c637dcc6cdaeada5f50cf8a0f168ce7742fa
   "description": "Kel's rich text editor (RTE)",
   "author": "Emonora",
   "license": "ISC",

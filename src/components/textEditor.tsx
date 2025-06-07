@@ -15,9 +15,10 @@ import { placeholder } from "@dear-rama/prosemirror-placeholder";
 import { useTheme } from "next-themes";
 
 // Custom imports
-import { fontSizeMark, textColorMark } from "./utils/text-style";
+import { fontSizeMark, textColorMark, fontFamilyMark } from "./utils/text-style";
 import applyColor from "./utils/apply-color";
 import applyFontSize from "./utils/apply-font-size";
+// import applyFontFace from "./utils/apply-font-face"; (Not implemented. Check font_switching branch)
 import applyMarkCmd from "./utils/apply-mark-cmd";
 import switchTheme from "./utils/switch-theme";
 
@@ -70,6 +71,7 @@ export default function RichTextEditor() {
       nodes: addListNodes(basicSchema.spec.nodes, "paragraph block*", "block"),
       marks: basicSchema.spec.marks.append({
         font_size: fontSizeMark,
+        font_family: fontFamilyMark,
         text_color: textColorMark,
       }),
     });
@@ -134,7 +136,7 @@ export default function RichTextEditor() {
           defaultValue="16px"
           className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 text-black"
         >
-          <option value="custom">Custom Font Size</option>
+          <option value="custom">specific</option>
           <option value="12px">12px</option>
           <option value="14px">14px</option>
           <option value="16px">16px</option>
