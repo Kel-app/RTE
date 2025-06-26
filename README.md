@@ -1,5 +1,9 @@
 # Kel RTE
 
+# Warning
+
+**This project has been shelved temporarily, while I work on the main project. If you would like to contribute, open a PR. There will be no new changes from me for a while**
+
 ## Known Issues
 
 ## Getting Started
