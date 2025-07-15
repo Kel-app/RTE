@@ -40,7 +40,9 @@ To implement proper theming for the component. You will need to use next themes.
 
 ## Usage
 
-> Note: This works for both pages and app router.
+> Waring: For all new versions from 0.1.0-alpha.3.2, the component now has a prop called `themeSwitch` which is a boolean. It is MANDATORY to set this prop manually, as it is required for the component to work properly.
+
+### As a standalone component
 
 ```tsx
 "use client";
@@ -48,7 +50,19 @@ To implement proper theming for the component. You will need to use next themes.
 import { RTE } from "@kel-app/rte";
 
 const App = () => {
-  return <RTE />;
+  return <RTE themeSwitch={true} />;
+};
+```
+
+### As a component integrated into a page with an already existing theme toggle or header:
+
+```tsx
+"use client";
+
+import { RTE } from "@kel-app/rte";
+
+const App = () => {
+  return <RTE themeSwitch={false} />;
 };
 ```
 
