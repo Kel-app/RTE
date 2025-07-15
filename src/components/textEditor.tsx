@@ -132,6 +132,16 @@ export default function RichTextEditor({
   if (themeSwitch) {
     return (
       <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white">
+        <div className="fixed top-4 right-4 w-20 h-20">
+          <Switch
+            id="theme-switch"
+            onCheckedChange={(checked) =>
+              switchTheme(theme, setTheme, setDefaultColor)
+            }
+          >
+            <Moon />
+          </Switch>
+        </div>
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full flex items-center gap-3 z-50">
           <select
             onChange={(e) => applyFontSize(e.target.value, view)}
@@ -188,20 +198,10 @@ export default function RichTextEditor({
     );
   }
 
-  // if false, return with a theme switch (for standalone editor)
+  // if false, return withOUT a theme switch (for integrated editor)
 
   return (
     <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white">
-      <div className="fixed top-4 right-4 w-20 h-20">
-        <Switch
-          id="theme-switch"
-          onCheckedChange={(checked) =>
-            switchTheme(theme, setTheme, setDefaultColor)
-          }
-        >
-          <Moon />
-        </Switch>
-      </div>
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full flex items-center gap-3 z-50">
         <select
           onChange={(e) => applyFontSize(e.target.value, view)}
