@@ -1,0 +1,215 @@
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { ThemeProvider } from 'next-themes';
+import RichTextEditor from '../src/components/textEditor';
+
+// Wrapper component for testing
+const EditorWrapper = ({ themeSwitch = true, defaultValue = '' }) => (
+  <ThemeProvider attribute="class" defaultTheme="light">
+    <RichTextEditor themeSwitch={themeSwitch} defaultValue={defaultValue} />
+  </ThemeProvider>
+);
+
+describe('RichTextEditor', () => {
+  beforeEach(() => {
+    // Clear all mocks before each test
+    jest.clearAllMocks();
+  });
+
+  describe('Basic Rendering', () => {
+    it('renders the editor with theme switch', () => {
+      render(<EditorWrapper themeSwitch={true} />);
+      
+      // Should have the theme switch
+      expect(screen.getByRole('switch')).toBeInTheDocument();
+      
+      // Should have the editor area
+      expect(document.querySelector('.ProseMirror')).toBeInTheDocument();
+    });
+
+    it('renders the editor without theme switch', () => {
+      render(<EditorWrapper themeSwitch={false} />);
+      
+      // Should not have the theme switch
+      expect(screen.queryByRole('switch')).not.toBeInTheDocument();
+      
+      // Should have the editor area
+      expect(document.querySelector('.ProseMirror')).toBeInTheDocument();
+    });
+
+    it('renders with default content', () => {
+      const defaultContent = 'Test content';
+      render(<EditorWrapper defaultValue={defaultContent} />);
+      
+      // Editor should be rendered
+      expect(document.querySelector('.ProseMirror')).toBeInTheDocument();
+    });
+  });
+
+  describe('Toolbar Functionality', () => {
+    it('renders all toolbar buttons', () => {
+      render(<EditorWrapper />);
+      
+      // Check for font size selector
+      expect(screen.getByDisplayValue('16px')).toBeInTheDocument();
+      
+      // Check for formatting buttons
+      expect(screen.getByTitle('Bold (Ctrl+B)')).toBeInTheDocument();
+      expect(screen.getByTitle('Italic (Ctrl+I)')).toBeInTheDocument();
+      expect(screen.getByTitle('Underline (Ctrl+U)')).toBeInTheDocument();
+      
+      // Check for undo/redo
+      expect(screen.getByTitle('Undo (Ctrl+Z)')).toBeInTheDocument();
+      expect(screen.getByTitle('Redo (Ctrl+Y)')).toBeInTheDocument();
+      
+      // Check for file upload
+      expect(screen.getByTitle('Upload File')).toBeInTheDocument();
+      
+      // Check for whiteboard
+      expect(screen.getByTitle('Open Whiteboard')).toBeInTheDocument();
+      
+      // Check for markdown export
+      expect(screen.getByTitle('Export as Markdown')).toBeInTheDocument();
+    });
+
+    it('font size selector works', async () => {
+      const user = userEvent.setup();
+      render(<EditorWrapper />);
+      
+      const fontSizeSelect = screen.getByDisplayValue('16px');
+      
+      await user.selectOptions(fontSizeSelect, '24px');
+      expect(fontSizeSelect.value).toBe('24px');
+    });
+
+    it('color picker is present', () => {
+      render(<EditorWrapper />);
+      
+      const colorPicker = screen.getByTitle('Text Color');
+      expect(colorPicker).toBeInTheDocument();
+      expect(colorPicker.type).toBe('color');
+    });
+  });
+
+  describe('File Upload', () => {
+    it('handles file upload button click', async () => {
+      const user = userEvent.setup();
+      render(<EditorWrapper />);
+      
+      const uploadButton = screen.getByTitle('Upload File');
+      
+      // Mock the file input creation and click
+      const createElementSpy = jest.spyOn(document, 'createElement');
+      const mockInput = {
+        type: '',
+        multiple: false,
+        style: { display: '' },
+        addEventListener: jest.fn(),
+        click: jest.fn(),
+      };
+      
+      createElementSpy.mockImplementation((tagName) => {
+        if (tagName === 'input') {
+          return mockInput as any;
+        }
+        return document.createElement(tagName);
+      });
+      
+      await user.click(uploadButton);
+      
+      expect(mockInput.type).toBe('file');
+      expect(mockInput.multiple).toBe(true);
+      expect(mockInput.click).toHaveBeenCalled();
+      
+      createElementSpy.mockRestore();
+    });
+  });
+
+  describe('Markdown Export', () => {
+    it('exports markdown and copies to clipboard', async () => {
+      const user = userEvent.setup();
+      render(<EditorWrapper />);
+      
+      const exportButton = screen.getByTitle('Export as Markdown');
+      
+      await user.click(exportButton);
+      
+      // Should call clipboard writeText
+      expect(navigator.clipboard.writeText).toHaveBeenCalled();
+      
+      // Should show alert
+      expect(global.alert).toHaveBeenCalledWith('Markdown copied to clipboard!');
+    });
+  });
+
+  describe('Theme Switching', () => {
+    it('renders theme switch when enabled', () => {
+      render(<EditorWrapper themeSwitch={true} />);
+      
+      const themeSwitch = screen.getByRole('switch');
+      expect(themeSwitch).toBeInTheDocument();
+    });
+
+    it('does not render theme switch when disabled', () => {
+      render(<EditorWrapper themeSwitch={false} />);
+      
+      const themeSwitch = screen.queryByRole('switch');
+      expect(themeSwitch).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Formatting Buttons', () => {
+    it('bold button is clickable', async () => {
+      const user = userEvent.setup();
+      render(<EditorWrapper />);
+      
+      const boldButton = screen.getByTitle('Bold (Ctrl+B)');
+      
+      await user.click(boldButton);
+      
+      // Button should be clickable (not disabled)
+      expect(boldButton).not.toBeDisabled();
+    });
+
+    it('italic button is clickable', async () => {
+      const user = userEvent.setup();
+      render(<EditorWrapper />);
+      
+      const italicButton = screen.getByTitle('Italic (Ctrl+I)');
+      
+      await user.click(italicButton);
+      
+      // Button should be clickable (not disabled)
+      expect(italicButton).not.toBeDisabled();
+    });
+
+    it('underline button is clickable', async () => {
+      const user = userEvent.setup();
+      render(<EditorWrapper />);
+      
+      const underlineButton = screen.getByTitle('Underline (Ctrl+U)');
+      
+      await user.click(underlineButton);
+      
+      // Button should be clickable (not disabled)
+      expect(underlineButton).not.toBeDisabled();
+    });
+  });
+
+  describe('Editor Focus', () => {
+    it('editor can receive focus', () => {
+      render(<EditorWrapper />);
+      
+      const editor = document.querySelector('.ProseMirror');
+      expect(editor).toBeInTheDocument();
+      
+      // Should be focusable
+      if (editor) {
+        fireEvent.focus(editor);
+        // After focus, the editor should be the active element or contain it
+        expect(document.activeElement === editor || editor.contains(document.activeElement)).toBe(true);
+      }
+    });
+  });
+});

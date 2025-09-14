@@ -1,0 +1,30 @@
+// Available fonts for the editor
+export const availableFonts = [
+  { name: "Default", value: "ui-sans-serif, system-ui, sans-serif" },
+  { name: "Arial", value: "Arial, sans-serif" },
+  { name: "Helvetica", value: "Helvetica, Arial, sans-serif" },
+  { name: "Times New Roman", value: "Times New Roman, Times, serif" },
+  { name: "Courier New", value: "Courier New, Courier, monospace" },
+  { name: "Verdana", value: "Verdana, Geneva, sans-serif" },
+  { name: "Georgia", value: "Georgia, Times, serif" },
+  { name: "Trebuchet MS", value: "Trebuchet MS, Helvetica, sans-serif" },
+  { name: "Comic Sans MS", value: "Comic Sans MS, cursive" },
+  { name: "Impact", value: "Impact, Charcoal, sans-serif" },
+  { name: "Palatino", value: "Palatino, Palatino Linotype, serif" },
+  { name: "Tahoma", value: "Tahoma, Geneva, sans-serif" },
+  {
+    name: "Century Gothic",
+    value: "Century Gothic, CenturyGothic, sans-serif",
+  },
+  { name: "Lucida Console", value: "Lucida Console, Monaco, monospace" },
+  // Web-safe fonts based on public fonts in the workspace
+  { name: "Assistant", value: "Assistant, sans-serif" },
+  { name: "Cascadia Code", value: "Cascadia Code, monospace" },
+  { name: "Comic Shanns", value: "Comic Shanns, cursive" },
+  { name: "Excalifont", value: "Excalifont, serif" },
+  { name: "Liberation Sans", value: "Liberation Sans, sans-serif" },
+  { name: "Lilita", value: "Lilita, sans-serif" },
+  { name: "Nunito", value: "Nunito, sans-serif" },
+  { name: "Virgil", value: "Virgil, serif" },
+  { name: "Xiaolai", value: "Xiaolai, serif" },
+];

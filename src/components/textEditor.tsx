@@ -19,21 +19,21 @@ import {
   fontSizeMark,
   textColorMark,
   fontFamilyMark,
+  underlineMark,
 } from "./utils/text-style";
-import applyColor from "./utils/apply-color";
-import applyFontSize from "./utils/apply-font-size";
-// import applyFontFace from "./utils/apply-font-face"; (Not implemented. Check font_switching branch)
-import applyMarkCmd from "./utils/apply-mark-cmd";
 import switchTheme from "./utils/switch-theme";
+import fileUpload, { imageNode, fileNode } from "./utils/file-upload";
+import Toolbar from "./utils/toolbar";
+import Whiteboard from "./utils/whiteboard";
 
 // Styles
 import "prosemirror-view/style/prosemirror.css";
 import "../index.css";
+import "./utils/rte-enhancements.css";
 
 // Components
 import { Switch } from "./ui/switch";
-import { Moon, Bold, Italic } from "lucide-react";
-import { Toggle } from "./ui/toggle";
+import { Moon } from "lucide-react";
 
 interface RTEProps {
   themeSwitch: boolean;
@@ -48,6 +48,7 @@ export default function RichTextEditor({
   const [view, setView] = useState<EditorView | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [defaultColor, setDefaultColor] = useState("#000000");
+  const [isWhiteboardOpen, setIsWhiteboardOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -79,11 +80,19 @@ export default function RichTextEditor({
     }, 50);
 
     const defaultSchema = new Schema({
-      nodes: addListNodes(basicSchema.spec.nodes, "paragraph block*", "block"),
+      nodes: addListNodes(
+        basicSchema.spec.nodes,
+        "paragraph block*",
+        "block"
+      ).append({
+        image: imageNode,
+        file: fileNode,
+      }),
       marks: basicSchema.spec.marks.append({
         font_size: fontSizeMark,
         font_family: fontFamilyMark,
         text_color: textColorMark,
+        underline: underlineMark,
       }),
     });
 
@@ -126,8 +135,47 @@ export default function RichTextEditor({
     });
 
     setView(editorView);
-    return () => editorView.destroy();
+
+    // Setup file upload functionality
+    const cleanup = fileUpload.setupFileDropZone(editorView);
+
+    return () => {
+      cleanup();
+      editorView.destroy();
+    };
   }, []);
+
+  // Whiteboard handlers
+  const handleWhiteboardOpen = () => {
+    setIsWhiteboardOpen(true);
+  };
+
+  const handleWhiteboardSave = (imageData: string) => {
+    if (!view) return;
+
+    // Insert the image into the editor
+    const { state } = view;
+    const { tr } = state;
+    const pos = state.selection.from;
+
+    // Create an image node
+    const imageNode = state.schema.nodes.image?.create({
+      src: imageData,
+      alt: "Excalidraw whiteboard",
+      title: "Created with Excalidraw",
+    });
+
+    if (imageNode) {
+      const transaction = tr.insert(pos, imageNode);
+      view.dispatch(transaction);
+    }
+
+    setIsWhiteboardOpen(false);
+  };
+
+  const handleWhiteboardCancel = () => {
+    setIsWhiteboardOpen(false);
+  };
 
   if (themeSwitch) {
     return (
@@ -142,58 +190,29 @@ export default function RichTextEditor({
             <Moon />
           </Switch>
         </div>
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full flex items-center gap-3 z-50">
-          <select
-            onChange={(e) => applyFontSize(e.target.value, view)}
-            defaultValue="16px"
-            className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 text-black"
-          >
-            <option value="custom">specific</option>
-            <option value="12px">12px</option>
-            <option value="14px">14px</option>
-            <option value="16px">16px</option>
-            <option value="18px">18px</option>
-            <option value="24px">24px</option>
-            <option value="32px">32px</option>
-          </select>
-
-          <input
-            type="color"
-            defaultValue={defaultColor}
-            onChange={(e) => applyColor(e.target.value, view)}
-            className="w-8 h-8 p-0 border-none cursor-pointer"
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full z-50">
+          <Toolbar
+            view={view}
+            defaultColor={defaultColor}
+            onWhiteboardOpen={handleWhiteboardOpen}
           />
-
-          <Toggle
-            onClick={() => applyMarkCmd("strong", view)}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
-          >
-            <Bold />
-          </Toggle>
-          <Toggle
-            onClick={() => applyMarkCmd("em", view)}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
-          >
-            <Italic />
-          </Toggle>
-          <button
-            onClick={() => view && undo(view.state, view.dispatch)}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
-          >
-            Undo
-          </button>
-          <button
-            onClick={() => view && redo(view.state, view.dispatch)}
-            className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
-          >
-            Redo
-          </button>
         </div>
 
         <div
           ref={editorRef}
-          className="flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white text-black dark:bg-black dark:text-white active:outline-none focus:outline-none active:border-none focus:border-none"
+          className="rte-editor-container flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white text-black dark:bg-black dark:text-white active:outline-none focus:outline-none active:border-none focus:border-none"
         />
+
+        {/* Whiteboard Modal */}
+        {isWhiteboardOpen && (
+          <Whiteboard
+            onSave={handleWhiteboardSave}
+            onCancel={handleWhiteboardCancel}
+            width={1000}
+            height={700}
+            themeMode={theme === "dark" ? "dark" : "light"}
+          />
+        )}
       </div>
     );
   }
@@ -202,58 +221,29 @@ export default function RichTextEditor({
 
   return (
     <div className="w-screen h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white">
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full flex items-center gap-3 z-50">
-        <select
-          onChange={(e) => applyFontSize(e.target.value, view)}
-          defaultValue="16px"
-          className="px-2 py-1 rounded bg-gray-200 hover:bg-gray-300 text-black"
-        >
-          <option value="custom">specific</option>
-          <option value="12px">12px</option>
-          <option value="14px">14px</option>
-          <option value="16px">16px</option>
-          <option value="18px">18px</option>
-          <option value="24px">24px</option>
-          <option value="32px">32px</option>
-        </select>
-
-        <input
-          type="color"
-          defaultValue={defaultColor}
-          onChange={(e) => applyColor(e.target.value, view)}
-          className="w-8 h-8 p-0 border-none cursor-pointer"
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white dark:bg-black px-6 py-3 shadow-lg rounded-full z-50">
+        <Toolbar
+          view={view}
+          defaultColor={defaultColor}
+          onWhiteboardOpen={handleWhiteboardOpen}
         />
-
-        <Toggle
-          onClick={() => applyMarkCmd("strong", view)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
-        >
-          <Bold />
-        </Toggle>
-        <Toggle
-          onClick={() => applyMarkCmd("em", view)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
-        >
-          <Italic />
-        </Toggle>
-        <button
-          onClick={() => view && undo(view.state, view.dispatch)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
-        >
-          Undo
-        </button>
-        <button
-          onClick={() => view && redo(view.state, view.dispatch)}
-          className="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 text-black cursor-pointer"
-        >
-          Redo
-        </button>
       </div>
 
       <div
         ref={editorRef}
-        className="flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white text-black dark:bg-black dark:text-white active:outline-none focus:outline-none active:border-none focus:border-none"
+        className="rte-editor-container flex-1 overflow-y-auto p-8 mx-12 mt-12 mb-32 rounded-lg shadow-lg bg-white text-black dark:bg-black dark:text-white active:outline-none focus:outline-none active:border-none focus:border-none"
       />
+
+      {/* Whiteboard Modal */}
+      {isWhiteboardOpen && (
+        <Whiteboard
+          onSave={handleWhiteboardSave}
+          onCancel={handleWhiteboardCancel}
+          width={1000}
+          height={700}
+          themeMode={theme === "dark" ? "dark" : "light"}
+        />
+      )}
     </div>
   );
 }

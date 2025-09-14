@@ -5,8 +5,8 @@ async function applyFontFace(font: string, view: EditorView | null) {
 
   const { state, dispatch } = view;
   const { from, to, empty } = state.selection;
-  const markType = state.schema.marks.font_face;
-  const mark = markType.create({ font });
+  const markType = state.schema.marks.font_family;
+  const mark = markType.create({ fontFamily: font });
   const tr = state.tr;
 
   if (empty) {
@@ -16,7 +16,7 @@ async function applyFontFace(font: string, view: EditorView | null) {
   }
 
   dispatch(tr);
-  view.focus()
+  view.focus();
 }
 
 export default applyFontFace;

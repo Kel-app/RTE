@@ -1,0 +1,188 @@
+/* Additional styles for the RTE library */
+
+/* Drag and drop styles */
+.drag-over {
+  border: 2px dashed #0066cc !important;
+  background-color: rgba(0, 102, 204, 0.1);
+}
+
+/* File attachment styles */
+.file-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  color: #374151;
+  font-size: 0.875rem;
+  transition: background-color 0.2s;
+}
+
+.file-attachment:hover {
+  background-color: #e5e7eb;
+}
+
+.dark .file-attachment {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.dark .file-attachment:hover {
+  background-color: #4b5563;
+}
+
+.file-icon {
+  font-size: 1rem;
+}
+
+.file-name {
+  font-weight: 500;
+}
+
+/* Image styles in editor */
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Editor container isolation and responsiveness */
+.rte-editor-container {
+  container-type: inline-size;
+  container-name: rte-editor;
+}
+
+.rte-editor-container .ProseMirror {
+  min-height: 320px;
+  line-height: 1.6;
+}
+
+@container rte-editor (max-width: 720px) {
+  .rte-editor-container .ProseMirror {
+    padding: 1rem !important;
+    margin: 0.5rem !important;
+  }
+}
+
+/* Theme-aware base for ProseMirror */
+.dark .ProseMirror {
+  background: #0b0b0c;
+  color: #f8fafc;
+}
+
+/* Whiteboard modal overlay */
+.whiteboard-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.whiteboard-modal {
+  background-color: white;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dark .whiteboard-modal {
+  background-color: #1f2937;
+  color: white;
+}
+
+/* Enhanced toolbar styles */
+.rte-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.rte-toolbar select,
+.rte-toolbar input[type="color"],
+.rte-toolbar button {
+  transition: all 0.2s ease;
+}
+
+.rte-toolbar select:focus,
+.rte-toolbar button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Responsive toolbar */
+@media (max-width: 768px) {
+  .rte-toolbar {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .rte-toolbar > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    justify-content: center;
+  }
+}
+
+/* Accessibility improvements */
+.rte-toolbar button[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1f2937;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+/* Animation for new features */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rte-feature-new {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Print styles */
+@media print {
+  .rte-toolbar,
+  .fixed {
+    display: none !important;
+  }
+
+  .ProseMirror {
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}

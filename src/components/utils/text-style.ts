@@ -24,8 +24,7 @@ export const textColorMark: MarkSpec = {
   toDOM: (node) => ["span", { style: `color: ${node.attrs.color}` }, 0],
 };
 
-// defines font family/interface 
-
+// defines font family/interface
 export const fontFamilyMark: MarkSpec = {
   attrs: { fontFamily: {} },
   parseDOM: [
@@ -34,5 +33,21 @@ export const fontFamilyMark: MarkSpec = {
       getAttrs: (value) => ({ fontFamily: value }),
     },
   ],
-  toDOM: (node) => ["span", { style: `font-family: ${node.attrs.color}` }, 0],
+  toDOM: (node) => [
+    "span",
+    { style: `font-family: ${node.attrs.fontFamily}` },
+    0,
+  ],
+};
+
+// defines underline
+export const underlineMark: MarkSpec = {
+  parseDOM: [
+    { tag: "u" },
+    {
+      style: "text-decoration",
+      getAttrs: (value) => (value === "underline" ? {} : false),
+    },
+  ],
+  toDOM: () => ["u", 0],
 };

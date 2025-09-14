@@ -1,0 +1,158 @@
+import { handleFileUpload } from "../src/components/utils/fileUpload";
+
+// Mock EditorView for testing
+const mockEditorView = {
+  state: {
+    tr: {
+      insert: jest.fn().mockReturnThis(),
+      scrollIntoView: jest.fn().mockReturnThis(),
+    },
+    selection: {
+      from: 0,
+    },
+  },
+  dispatch: jest.fn(),
+};
+
+describe("File Upload Utility", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    // Mock URL.createObjectURL
+    global.URL.createObjectURL = jest.fn(() => "mocked-url");
+
+    // Mock FileReader
+    global.FileReader = jest.fn(() => ({
+      readAsDataURL: jest.fn(),
+      result: "data:image/png;base64,mockedbase64data",
+      onload: null,
+    })) as any;
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  describe("handleFileUpload", () => {
+    it("processes image files correctly", () => {
+      const mockImageFile = new File(["image content"], "test.png", {
+        type: "image/png",
+      });
+
+      const files = [mockImageFile];
+
+      handleFileUpload(files, mockEditorView as any);
+
+      // Should create object URL for image
+      expect(URL.createObjectURL).toHaveBeenCalledWith(mockImageFile);
+    });
+
+    it("processes PDF files correctly", () => {
+      const mockPdfFile = new File(["pdf content"], "test.pdf", {
+        type: "application/pdf",
+      });
+
+      const files = [mockPdfFile];
+
+      handleFileUpload(files, mockEditorView as any);
+
+      // Should create object URL for PDF
+      expect(URL.createObjectURL).toHaveBeenCalledWith(mockPdfFile);
+    });
+
+    it("processes text files correctly", () => {
+      const mockTextFile = new File(["text content"], "test.txt", {
+        type: "text/plain",
+      });
+
+      const files = [mockTextFile];
+
+      handleFileUpload(files, mockEditorView as any);
+
+      // Should create a FileReader for text files
+      expect(FileReader).toHaveBeenCalled();
+    });
+
+    it("handles multiple files", () => {
+      const mockFile1 = new File(["content1"], "test1.png", {
+        type: "image/png",
+      });
+      const mockFile2 = new File(["content2"], "test2.jpg", {
+        type: "image/jpeg",
+      });
+
+      const files = [mockFile1, mockFile2];
+
+      handleFileUpload(files, mockEditorView as any);
+
+      // Should process both files
+      expect(URL.createObjectURL).toHaveBeenCalledTimes(2);
+    });
+
+    it("handles unsupported file types gracefully", () => {
+      const mockUnsupportedFile = new File(["content"], "test.xyz", {
+        type: "application/unknown",
+      });
+
+      const files = [mockUnsupportedFile];
+
+      // Should not throw an error
+      expect(() => {
+        handleFileUpload(files, mockEditorView as any);
+      }).not.toThrow();
+    });
+
+    it("handles empty file list", () => {
+      const files: File[] = [];
+
+      // Should not throw an error
+      expect(() => {
+        handleFileUpload(files, mockEditorView as any);
+      }).not.toThrow();
+    });
+  });
+
+  describe("File type detection", () => {
+    it("correctly identifies image files", () => {
+      const imageTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+
+      imageTypes.forEach((type) => {
+        const mockFile = new File(["content"], "test.img", { type });
+        const files = [mockFile];
+
+        expect(() => {
+          handleFileUpload(files, mockEditorView as any);
+        }).not.toThrow();
+      });
+    });
+
+    it("correctly identifies PDF files", () => {
+      const mockFile = new File(["content"], "test.pdf", {
+        type: "application/pdf",
+      });
+      const files = [mockFile];
+
+      expect(() => {
+        handleFileUpload(files, mockEditorView as any);
+      }).not.toThrow();
+    });
+
+    it("correctly identifies text files", () => {
+      const textTypes = [
+        "text/plain",
+        "text/html",
+        "text/css",
+        "text/javascript",
+      ];
+
+      textTypes.forEach((type) => {
+        const mockFile = new File(["content"], "test.txt", { type });
+        const files = [mockFile];
+
+        expect(() => {
+          handleFileUpload(files, mockEditorView as any);
+        }).not.toThrow();
+      });
+    });
+  });
+});

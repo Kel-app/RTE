@@ -27,6 +27,11 @@ export default function UserPrompt({ onConfirm }: UserPromptProps) {
     setOpen(false);
   };
 
+  const handleCancel = () => {
+    setOpen(false);
+    onConfirm("16px"); // fallback to default
+  };
+
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent className="bg-white dark:bg-black text-black dark:text-white">
@@ -42,7 +47,7 @@ export default function UserPrompt({ onConfirm }: UserPromptProps) {
           placeholder="23px"
         />
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleConfirm}>
             Continue
           </AlertDialogAction>

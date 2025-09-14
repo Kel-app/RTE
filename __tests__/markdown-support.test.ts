@@ -1,0 +1,93 @@
+import {
+  markdownToHtml,
+  htmlToMarkdown,
+} from "../src/components/utils/markdownSupport";
+
+describe("Markdown Support", () => {
+  describe("markdownToHtml", () => {
+    it("converts basic markdown to HTML", () => {
+      const markdown = "# Hello World\n\nThis is **bold** text.";
+      const html = markdownToHtml(markdown);
+
+      expect(html).toContain("<h1>Hello World</h1>");
+      expect(html).toContain("<strong>bold</strong>");
+    });
+
+    it("handles italic text", () => {
+      const markdown = "This is *italic* text.";
+      const html = markdownToHtml(markdown);
+
+      expect(html).toContain("<em>italic</em>");
+    });
+
+    it("handles links", () => {
+      const markdown = "[Link text](https://example.com)";
+      const html = markdownToHtml(markdown);
+
+      expect(html).toContain('<a href="https://example.com">Link text</a>');
+    });
+
+    it("handles code blocks", () => {
+      const markdown = '```javascript\nconsole.log("hello");\n```';
+      const html = markdownToHtml(markdown);
+
+      expect(html).toContain("<code>");
+      expect(html).toContain('console.log("hello");');
+    });
+
+    it("handles unordered lists", () => {
+      const markdown = "- Item 1\n- Item 2";
+      const html = markdownToHtml(markdown);
+
+      expect(html).toContain("<ul>");
+      expect(html).toContain("<li>Item 1</li>");
+      expect(html).toContain("<li>Item 2</li>");
+    });
+  });
+
+  describe("htmlToMarkdown", () => {
+    it("converts basic HTML to markdown", () => {
+      const html =
+        "<h1>Hello World</h1><p>This is <strong>bold</strong> text.</p>";
+      const markdown = htmlToMarkdown(html);
+
+      expect(markdown).toContain("# Hello World");
+      expect(markdown).toContain("**bold**");
+    });
+
+    it("handles italic text", () => {
+      const html = "<p>This is <em>italic</em> text.</p>";
+      const markdown = htmlToMarkdown(html);
+
+      expect(markdown).toContain("*italic*");
+    });
+
+    it("handles links", () => {
+      const html = '<a href="https://example.com">Link text</a>';
+      const markdown = htmlToMarkdown(html);
+
+      expect(markdown).toContain("[Link text](https://example.com)");
+    });
+
+    it("handles lists", () => {
+      const html = "<ul><li>Item 1</li><li>Item 2</li></ul>";
+      const markdown = htmlToMarkdown(html);
+
+      expect(markdown).toContain("- Item 1");
+      expect(markdown).toContain("- Item 2");
+    });
+  });
+
+  describe("Round-trip conversion", () => {
+    it("preserves content through markdown to HTML and back", () => {
+      const originalMarkdown = "# Test\n\nThis is **bold** and *italic* text.";
+      const html = markdownToHtml(originalMarkdown);
+      const backToMarkdown = htmlToMarkdown(html);
+
+      // Should contain the main content elements
+      expect(backToMarkdown).toContain("Test");
+      expect(backToMarkdown).toContain("**bold**");
+      expect(backToMarkdown).toContain("*italic*");
+    });
+  });
+});

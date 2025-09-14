@@ -1,0 +1,81 @@
+/* Excalidraw Whiteboard Styles */
+
+/* Ensure Excalidraw container has proper isolation */
+.excalidraw-whiteboard-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.excalidraw-whiteboard-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.excalidraw-whiteboard-container.dark {
+  background: #1f2937;
+}
+
+/* Excalidraw component wrapper - ensure it takes full dimensions */
+.excalidraw-whiteboard-canvas {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  overflow: hidden;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+/* Reset any potential CSS conflicts with Excalidraw */
+.excalidraw-whiteboard-canvas * {
+  box-sizing: border-box;
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+.excalidraw-whiteboard-canvas .excalidraw {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.excalidraw-whiteboard-canvas .excalidraw .excalidraw__canvas {
+  display: block !important;
+}
+
+/* Override any conflicting styles from the parent application */
+.excalidraw-whiteboard-canvas .excalidraw,
+.excalidraw-whiteboard-canvas .excalidraw * {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif !important;
+}
+
+/* Ensure UI elements are visible and clickable */
+.excalidraw-whiteboard-canvas .excalidraw .Island {
+  z-index: 1 !important;
+}
+
+/* Make sure buttons and UI elements have proper styles */
+.excalidraw-whiteboard-canvas .excalidraw .ToolIcon {
+  background: white !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.excalidraw-whiteboard-canvas .excalidraw .ToolIcon:hover {
+  background: #f3f4f6 !important;
+}
+
+.excalidraw-whiteboard-canvas .excalidraw .ToolIcon.is-active {
+  background: #dbeafe !important;
+  border-color: #3b82f6 !important;
+}
