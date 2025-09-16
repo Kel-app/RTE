@@ -19,6 +19,18 @@ export interface ServerUploadConfig {
   headers?: Record<string, string>;
   /** Enable progress tracking */
   enableProgress?: boolean;
+  /** HTTP method for upload (default: POST) */
+  method?: string;
+  /** Field name for file in form data (default: file) */
+  fieldName?: string;
+  /** Additional form fields */
+  additionalFields?: Record<string, string>;
+  /** Response format parsing (default: json) */
+  responseFormat?: 'json' | 'text' | 'custom';
+  /** Field name for URL in response (default: url) */
+  urlField?: string;
+  /** Authentication method (default: bearer) */
+  authMethod?: 'bearer' | 'apikey' | 'basic' | 'custom';
 }
 
 export interface UploadResponse {
@@ -135,7 +147,32 @@ export const uploadFileToServer = async (
     xhr.addEventListener('load', () => {
       if (xhr.status >= 200 && xhr.status < 300) {
         try {
-          const response: UploadResponse = JSON.parse(xhr.responseText);
+          const responseFormat = finalConfig.responseFormat || 'json';
+          const urlField = finalConfig.urlField || 'url';
+          
+          let response: UploadResponse;
+          
+          switch (responseFormat) {
+            case 'json':
+              response = JSON.parse(xhr.responseText);
+              break;
+            case 'text':
+              // Assume the response text is the URL directly
+              response = { url: xhr.responseText.trim() };
+              break;
+            case 'custom':
+              // Custom parsing will be handled by the wrapper function
+              response = JSON.parse(xhr.responseText);
+              break;
+            default:
+              response = JSON.parse(xhr.responseText);
+          }
+          
+          // Ensure the response has a URL field using the configured field name
+          if (responseFormat === 'json' && urlField !== 'url' && response[urlField as keyof UploadResponse]) {
+            response.url = response[urlField as keyof UploadResponse] as string;
+          }
+          
           resolve(response);
         } catch (error) {
           reject(new Error('Invalid response format from server'));
@@ -154,16 +191,33 @@ export const uploadFileToServer = async (
     });
     
     // Setup request
-    xhr.open('POST', finalConfig.uploadUrl);
+    const method = finalConfig.method || 'POST';
+    xhr.open(method, finalConfig.uploadUrl);
     
     // Set timeout
     if (finalConfig.timeout) {
       xhr.timeout = finalConfig.timeout;
     }
     
-    // Set headers
+    // Set headers with enhanced auth method support
     if (finalConfig.apiKey) {
-      xhr.setRequestHeader('Authorization', `Bearer ${finalConfig.apiKey}`);
+      const authMethod = finalConfig.authMethod || 'bearer';
+      switch (authMethod) {
+        case 'bearer':
+          xhr.setRequestHeader('Authorization', `Bearer ${finalConfig.apiKey}`);
+          break;
+        case 'apikey':
+          xhr.setRequestHeader('X-API-Key', finalConfig.apiKey);
+          break;
+        case 'basic':
+          xhr.setRequestHeader('Authorization', `Basic ${btoa(finalConfig.apiKey)}`);
+          break;
+        case 'custom':
+          // Custom auth handled via headers
+          break;
+        default:
+          xhr.setRequestHeader('Authorization', `Bearer ${finalConfig.apiKey}`);
+      }
     }
     
     if (finalConfig.headers) {
@@ -172,12 +226,19 @@ export const uploadFileToServer = async (
       });
     }
     
-    // Prepare form data
+    // Prepare form data with configurable field names
     const formData = new FormData();
-    formData.append('file', file);
+    const fieldName = finalConfig.fieldName || 'file';
+    formData.append(fieldName, file);
     formData.append('filename', file.name);
     formData.append('type', file.type);
     formData.append('size', file.size.toString());
+    
+    // Add additional fields for custom servers
+    const additionalFields = finalConfig.additionalFields || {};
+    Object.entries(additionalFields).forEach(([key, value]) => {
+      formData.append(key, String(value));
+    });
     
     // Send request
     xhr.send(formData);
@@ -188,7 +249,7 @@ export const uploadFileToServer = async (
  * Utility function to create common cloud storage configurations
  */
 export const createCloudStorageConfig = (
-  provider: 'aws' | 'gcp' | 'azure' | 'cloudinary' | 'custom',
+  provider: 'aws' | 'gcp' | 'azure' | 'cloudinary' | 'googledrive' | 'dropbox' | 'icloud' | 'custom',
   options: Record<string, any> = {}
 ): ServerUploadConfig => {
   switch (provider) {
@@ -235,15 +296,190 @@ export const createCloudStorageConfig = (
         },
         ...options
       };
+
+    case 'googledrive':
+      return {
+        uploadUrl: options.uploadUrl || process.env.RTE_GOOGLEDRIVE_UPLOAD_URL || 'https://www.googleapis.com/upload/drive/v3/files',
+        apiKey: options.apiKey || process.env.RTE_GOOGLEDRIVE_API_KEY,
+        headers: {
+          'Authorization': `Bearer ${options.apiKey || process.env.RTE_GOOGLEDRIVE_API_KEY}`,
+          'Content-Type': 'multipart/related',
+          ...options.headers
+        },
+        maxFileSize: options.maxFileSize || 15 * 1024 * 1024 * 1024, // 15GB default for Google Drive
+        ...options
+      };
+
+    case 'dropbox':
+      return {
+        uploadUrl: options.uploadUrl || process.env.RTE_DROPBOX_UPLOAD_URL || 'https://content.dropboxapi.com/2/files/upload',
+        apiKey: options.apiKey || process.env.RTE_DROPBOX_ACCESS_TOKEN,
+        headers: {
+          'Authorization': `Bearer ${options.apiKey || process.env.RTE_DROPBOX_ACCESS_TOKEN}`,
+          'Content-Type': 'application/octet-stream',
+          'Dropbox-API-Arg': JSON.stringify({
+            path: options.path || '/rte-uploads/' + Date.now(),
+            mode: 'add',
+            autorename: true
+          }),
+          ...options.headers
+        },
+        maxFileSize: options.maxFileSize || 150 * 1024 * 1024, // 150MB default for Dropbox API
+        ...options
+      };
+
+    case 'icloud':
+      return {
+        uploadUrl: options.uploadUrl || process.env.RTE_ICLOUD_UPLOAD_URL,
+        apiKey: options.apiKey || process.env.RTE_ICLOUD_API_KEY,
+        headers: {
+          'Authorization': `Bearer ${options.apiKey || process.env.RTE_ICLOUD_API_KEY}`,
+          'X-Apple-CloudKit-Request-KeyID': options.keyId || process.env.RTE_ICLOUD_KEY_ID,
+          'X-Apple-CloudKit-Request-ISO8601Date': new Date().toISOString(),
+          'Content-Type': 'multipart/form-data',
+          ...options.headers
+        },
+        maxFileSize: options.maxFileSize || 50 * 1024 * 1024, // 50MB typical limit for iCloud
+        ...options
+      };
       
     case 'custom':
     default:
       return {
         uploadUrl: options.uploadUrl || process.env.RTE_UPLOAD_URL,
         apiKey: options.apiKey || process.env.RTE_API_KEY,
+        // Enhanced custom server support
+        method: options.method || 'POST',
+        fieldName: options.fieldName || 'file', // Configurable field name for file upload
+        additionalFields: options.additionalFields || {}, // Additional form fields
+        responseFormat: options.responseFormat || 'json', // json, text, or custom parser
+        urlField: options.urlField || 'url', // Field name for URL in response
+        authMethod: options.authMethod || 'bearer', // bearer, apikey, basic, custom
         ...options
       };
   }
+};
+
+/**
+ * Specialized upload function for Google Drive
+ */
+export const uploadToGoogleDrive = async (
+  file: File,
+  accessToken: string,
+  options: {
+    folderId?: string;
+    fileName?: string;
+    description?: string;
+  } = {},
+  onProgress?: (progress: UploadProgress) => void
+): Promise<UploadResponse> => {
+  const metadata = {
+    name: options.fileName || file.name,
+    description: options.description || `Uploaded from Kel RTE on ${new Date().toISOString()}`,
+    ...(options.folderId && { parents: [options.folderId] })
+  };
+
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+  form.append('file', file);
+
+  const config = createCloudStorageConfig('googledrive', {
+    apiKey: accessToken,
+    uploadUrl: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+    ...options
+  });
+
+  const response = await uploadFileToServer(file, config, onProgress);
+  
+  // Google Drive returns the file ID, construct the public URL
+  return {
+    ...response,
+    url: response.url || `https://drive.google.com/file/d/${response.id}/view`,
+  };
+};
+
+/**
+ * Specialized upload function for Dropbox
+ */
+export const uploadToDropbox = async (
+  file: File,
+  accessToken: string,
+  options: {
+    path?: string;
+    autorename?: boolean;
+    mode?: 'add' | 'overwrite';
+  } = {},
+  onProgress?: (progress: UploadProgress) => void
+): Promise<UploadResponse> => {
+  const config = createCloudStorageConfig('dropbox', {
+    apiKey: accessToken,
+    path: options.path || `/rte-uploads/${Date.now()}-${file.name}`,
+    ...options
+  });
+
+  const response = await uploadFileToServer(file, config, onProgress);
+  
+  // Generate a shareable link for Dropbox
+  return {
+    ...response,
+    url: response.url || `https://www.dropbox.com/s/${response.id}/${file.name}`,
+  };
+};
+
+/**
+ * Specialized upload function for iCloud Drive
+ */
+export const uploadToiCloud = async (
+  file: File,
+  apiKey: string,
+  options: {
+    containerId?: string;
+    zoneName?: string;
+    recordType?: string;
+  } = {},
+  onProgress?: (progress: UploadProgress) => void
+): Promise<UploadResponse> => {
+  const config = createCloudStorageConfig('icloud', {
+    apiKey,
+    containerId: options.containerId || process.env.RTE_ICLOUD_CONTAINER_ID,
+    zoneName: options.zoneName || '_defaultZone',
+    recordType: options.recordType || 'RTE_Upload',
+    ...options
+  });
+
+  return uploadFileToServer(file, config, onProgress);
+};
+
+/**
+ * Enhanced custom server upload with flexible configuration
+ */
+export const uploadToCustomServer = async (
+  file: File,
+  config: ServerUploadConfig & {
+    method?: string;
+    fieldName?: string;
+    additionalFields?: Record<string, string>;
+    responseFormat?: 'json' | 'text' | 'custom';
+    urlField?: string;
+    authMethod?: 'bearer' | 'apikey' | 'basic' | 'custom';
+    customParser?: (response: string) => UploadResponse;
+  },
+  onProgress?: (progress: UploadProgress) => void
+): Promise<UploadResponse> => {
+  const enhancedConfig = createCloudStorageConfig('custom', config);
+  
+  // Use custom parser if provided for response format
+  if (config.customParser && config.responseFormat === 'custom') {
+    const originalUpload = uploadFileToServer(file, enhancedConfig, onProgress);
+    return originalUpload.then(response => {
+      if (config.customParser) {
+        return config.customParser(JSON.stringify(response));
+      }
+      return response;
+    });
+  }
+
+  return uploadFileToServer(file, enhancedConfig, onProgress);
 };
 
 /**
@@ -271,5 +507,9 @@ export default {
   getDefaultConfig,
   uploadFileToServer,
   createCloudStorageConfig,
-  fallbackToBase64
+  fallbackToBase64,
+  uploadToGoogleDrive,
+  uploadToDropbox,
+  uploadToiCloud,
+  uploadToCustomServer
 };

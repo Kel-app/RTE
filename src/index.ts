@@ -8,7 +8,11 @@ export {
   getDefaultConfig, 
   uploadFileToServer, 
   createCloudStorageConfig, 
-  fallbackToBase64 
+  fallbackToBase64,
+  uploadToGoogleDrive,
+  uploadToDropbox,
+  uploadToiCloud,
+  uploadToCustomServer
 } from "./components/utils/server-upload";
 
 // Export file upload types for type safety

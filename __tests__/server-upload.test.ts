@@ -398,6 +398,70 @@ describe('Server Upload Utility', () => {
         'x-custom': 'value',
       });
     });
+
+    it('should create Google Drive config', () => {
+      const config = createCloudStorageConfig('googledrive', {
+        apiKey: 'google-token',
+      });
+
+      expect(config).toEqual({
+        uploadUrl: 'https://www.googleapis.com/upload/drive/v3/files',
+        apiKey: 'google-token',
+        headers: {
+          'Authorization': 'Bearer google-token',
+          'Content-Type': 'multipart/related',
+        },
+        maxFileSize: 15 * 1024 * 1024 * 1024, // 15GB
+      });
+    });
+
+    it('should create Dropbox config', () => {
+      const config = createCloudStorageConfig('dropbox', {
+        apiKey: 'dropbox-token',
+        path: '/test/file.txt',
+      });
+
+      expect(config.uploadUrl).toBe('https://content.dropboxapi.com/2/files/upload');
+      expect(config.apiKey).toBe('dropbox-token');
+      expect(config.headers?.['Authorization']).toBe('Bearer dropbox-token');
+      expect(config.maxFileSize).toBe(150 * 1024 * 1024); // 150MB
+    });
+
+    it('should create iCloud config', () => {
+      const config = createCloudStorageConfig('icloud', {
+        apiKey: 'icloud-token',
+        keyId: 'key-123',
+      });
+
+      expect(config.apiKey).toBe('icloud-token');
+      expect(config.headers?.['Authorization']).toBe('Bearer icloud-token');
+      expect(config.headers?.['X-Apple-CloudKit-Request-KeyID']).toBe('key-123');
+      expect(config.maxFileSize).toBe(50 * 1024 * 1024); // 50MB
+    });
+
+    it('should create enhanced custom config', () => {
+      const config = createCloudStorageConfig('custom', {
+        uploadUrl: 'https://myapi.com/upload',
+        apiKey: 'custom-key',
+        method: 'PUT',
+        fieldName: 'upload',
+        authMethod: 'apikey',
+        responseFormat: 'text',
+        urlField: 'fileUrl',
+        additionalFields: { userId: '123' },
+      });
+
+      expect(config).toEqual({
+        uploadUrl: 'https://myapi.com/upload',
+        apiKey: 'custom-key',
+        method: 'PUT',
+        fieldName: 'upload',
+        authMethod: 'apikey',
+        responseFormat: 'text',
+        urlField: 'fileUrl',
+        additionalFields: { userId: '123' },
+      });
+    });
   });
 
   describe('fallbackToBase64', () => {
@@ -442,6 +506,59 @@ describe('Server Upload Utility', () => {
       await expect(fallbackToBase64(mockFile)).rejects.toThrow(
         'Failed to read file as base64'
       );
+    });
+  });
+
+  describe('Specialized Upload Functions', () => {
+    // Import the functions we want to test
+    const { uploadToGoogleDrive, uploadToDropbox, uploadToiCloud, uploadToCustomServer } = require('../src/components/utils/server-upload');
+    
+    let mockFile: File;
+
+    beforeEach(() => {
+      mockFile = new File(['test content'], 'test.txt', { type: 'text/plain' }) as any;
+    });
+
+    describe('uploadToGoogleDrive', () => {
+      it('should upload to Google Drive with proper configuration', async () => {
+        // Mock successful upload response
+        setTimeout(() => {
+          const loadHandler = mockXHR.addEventListener.mock.calls.find(
+            call => call[0] === 'load'
+          )?.[1];
+          if (loadHandler) loadHandler();
+        }, 0);
+
+        const result = await uploadToGoogleDrive(mockFile, 'test-token', {
+          folderId: 'folder-123',
+          fileName: 'custom-name.txt',
+        });
+
+        expect(result.url).toContain('drive.google.com');
+      });
+    });
+
+    describe('uploadToCustomServer', () => {
+      it('should handle custom server configuration', async () => {
+        // Mock successful upload response
+        setTimeout(() => {
+          const loadHandler = mockXHR.addEventListener.mock.calls.find(
+            call => call[0] === 'load'
+          )?.[1];
+          if (loadHandler) loadHandler();
+        }, 0);
+
+        const result = await uploadToCustomServer(mockFile, {
+          uploadUrl: 'https://myapi.com/upload',
+          apiKey: 'custom-key',
+          method: 'PUT',
+          fieldName: 'upload',
+          authMethod: 'apikey',
+          responseFormat: 'json',
+        });
+
+        expect(result).toBeDefined();
+      });
     });
   });
 });

@@ -144,16 +144,185 @@ const cloudinaryConfig = createCloudStorageConfig('cloudinary', {
 });
 ```
 
-### Custom Server
+## Personal Account Providers
+
+### Google Drive
+
+Perfect for personal accounts with OAuth integration:
 
 ```tsx
+import { createCloudStorageConfig, uploadToGoogleDrive } from "@kel-app/rte";
+
+// Basic configuration
+const googleDriveConfig = createCloudStorageConfig('googledrive', {
+  apiKey: 'your-oauth-access-token', // From Google OAuth flow
+});
+
+// Or use the specialized function with more options
+const handleGoogleDriveUpload = async (file: File) => {
+  try {
+    const result = await uploadToGoogleDrive(file, accessToken, {
+      folderId: 'your-folder-id', // Optional: specific folder
+      fileName: 'custom-name.jpg', // Optional: custom filename
+      description: 'Uploaded from my app'
+    });
+    console.log('File uploaded:', result.url);
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+};
+```
+
+### Dropbox
+
+Great for personal file storage:
+
+```tsx
+import { createCloudStorageConfig, uploadToDropbox } from "@kel-app/rte";
+
+// Basic configuration
+const dropboxConfig = createCloudStorageConfig('dropbox', {
+  apiKey: 'your-dropbox-access-token', // From Dropbox OAuth
+});
+
+// Or use the specialized function
+const handleDropboxUpload = async (file: File) => {
+  try {
+    const result = await uploadToDropbox(file, accessToken, {
+      path: '/my-app-uploads/' + file.name,
+      autorename: true, // Rename if file exists
+      mode: 'add' // or 'overwrite'
+    });
+    console.log('File uploaded:', result.url);
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+};
+```
+
+### iCloud Drive
+
+For Apple ecosystem integration:
+
+```tsx
+import { createCloudStorageConfig, uploadToiCloud } from "@kel-app/rte";
+
+// Basic configuration
+const icloudConfig = createCloudStorageConfig('icloud', {
+  apiKey: 'your-icloud-api-key',
+  keyId: 'your-icloud-key-id',
+  containerId: 'your-container-id'
+});
+
+// Or use the specialized function
+const handleiCloudUpload = async (file: File) => {
+  try {
+    const result = await uploadToiCloud(file, apiKey, {
+      containerId: 'your-container-id',
+      zoneName: '_defaultZone',
+      recordType: 'MyAppUpload'
+    });
+    console.log('File uploaded:', result.url);
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+};
+```
+
+### Enhanced Custom Server
+
+Now supports flexible server configurations for any custom backend:
+
+```tsx
+import { createCloudStorageConfig, uploadToCustomServer } from "@kel-app/rte";
+
+// Basic custom server
 const customConfig = createCloudStorageConfig('custom', {
   uploadUrl: 'https://your-api.com/files/upload',
   apiKey: 'your-custom-key',
   maxFileSize: 5 * 1024 * 1024, // 5MB
   allowedTypes: ['image/*', 'application/pdf'],
+  
+  // Enhanced custom server options
+  method: 'POST', // or 'PUT', 'PATCH'
+  fieldName: 'upload', // Field name for the file in form data
+  authMethod: 'bearer', // 'bearer', 'apikey', 'basic', 'custom'
+  responseFormat: 'json', // 'json', 'text', 'custom'
+  urlField: 'downloadUrl', // Field name for URL in JSON response
+  
+  additionalFields: {
+    userId: '12345',
+    category: 'documents',
+    public: 'true'
+  },
+  
   headers: {
-    'X-Custom-Auth': 'bearer-token'
+    'X-Custom-Auth': 'bearer-token',
+    'X-App-Version': '1.0.0'
+  }
+});
+
+// Or use the specialized function for maximum flexibility
+const handleCustomUpload = async (file: File) => {
+  try {
+    const result = await uploadToCustomServer(file, {
+      uploadUrl: 'https://your-api.com/files',
+      apiKey: 'your-token',
+      method: 'PUT',
+      fieldName: 'fileData',
+      authMethod: 'apikey', // Sends as X-API-Key header
+      responseFormat: 'text', // Response is just the file URL
+      
+      // Custom response parser
+      customParser: (response) => {
+        const url = response.trim();
+        return { url, id: url.split('/').pop() };
+      }
+    });
+    console.log('File uploaded:', result.url);
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+};
+```
+
+#### Server Structure Examples
+
+**Laravel/PHP:**
+```tsx
+const laravelConfig = createCloudStorageConfig('custom', {
+  uploadUrl: 'https://your-app.com/api/upload',
+  fieldName: 'file',
+  authMethod: 'bearer',
+  responseFormat: 'json',
+  urlField: 'path', // Laravel might return { "path": "uploads/file.jpg" }
+  additionalFields: {
+    disk: 'public'
+  }
+});
+```
+
+**Express.js/Node.js:**
+```tsx
+const expressConfig = createCloudStorageConfig('custom', {
+  uploadUrl: 'https://your-api.com/upload',
+  fieldName: 'upload',
+  authMethod: 'bearer',
+  responseFormat: 'json',
+  urlField: 'url' // Express might return { "url": "https://cdn.com/file.jpg" }
+});
+```
+
+**Django/Python:**
+```tsx
+const djangoConfig = createCloudStorageConfig('custom', {
+  uploadUrl: 'https://your-app.com/api/files/',
+  fieldName: 'file',
+  authMethod: 'bearer',
+  responseFormat: 'json',
+  urlField: 'file_url', // Django might return { "file_url": "..." }
+  headers: {
+    'X-CSRFToken': 'your-csrf-token'
   }
 });
 ```

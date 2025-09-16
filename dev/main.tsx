@@ -11,15 +11,62 @@ function DevApp() {
   );
   const [defaultContent, setDefaultContent] = React.useState("");
   const [serverUploadEnabled, setServerUploadEnabled] = React.useState(false);
+  const [selectedProvider, setSelectedProvider] = React.useState<'mock' | 'googledrive' | 'dropbox' | 'icloud' | 'custom'>('mock');
   const [uploadProgress, setUploadProgress] = React.useState<Record<string, number>>({});
 
-  // Mock server upload configuration for development
-  const mockUploadConfig = {
-    uploadUrl: "https://httpbin.org/post", // Mock endpoint for testing
-    apiKey: "dev-test-key",
-    maxFileSize: 5 * 1024 * 1024, // 5MB
-    allowedTypes: ["image/*", "application/pdf", "text/*"],
-    enableProgress: true,
+  // Mock server upload configurations for different providers
+  const getUploadConfig = (provider: string) => {
+    switch (provider) {
+      case 'googledrive':
+        return {
+          uploadUrl: "https://httpbin.org/post", // Mock endpoint
+          apiKey: "mock-google-token",
+          maxFileSize: 15 * 1024 * 1024 * 1024, // 15GB
+          allowedTypes: ["*/*"],
+          enableProgress: true,
+          headers: { 'X-Mock-Provider': 'Google Drive' }
+        };
+      case 'dropbox':
+        return {
+          uploadUrl: "https://httpbin.org/post", // Mock endpoint
+          apiKey: "mock-dropbox-token",
+          maxFileSize: 150 * 1024 * 1024, // 150MB
+          allowedTypes: ["*/*"],
+          enableProgress: true,
+          headers: { 'X-Mock-Provider': 'Dropbox' }
+        };
+      case 'icloud':
+        return {
+          uploadUrl: "https://httpbin.org/post", // Mock endpoint
+          apiKey: "mock-icloud-token",
+          maxFileSize: 50 * 1024 * 1024, // 50MB
+          allowedTypes: ["*/*"],
+          enableProgress: true,
+          headers: { 'X-Mock-Provider': 'iCloud Drive' }
+        };
+      case 'custom':
+        return {
+          uploadUrl: "https://httpbin.org/post", // Mock endpoint
+          apiKey: "custom-server-key",
+          method: "POST",
+          fieldName: "upload",
+          authMethod: "bearer",
+          responseFormat: "json",
+          maxFileSize: 10 * 1024 * 1024, // 10MB
+          allowedTypes: ["image/*", "application/pdf", "text/*"],
+          enableProgress: true,
+          headers: { 'X-Mock-Provider': 'Custom Server' }
+        };
+      default: // mock
+        return {
+          uploadUrl: "https://httpbin.org/post", // Mock endpoint for testing
+          apiKey: "dev-test-key",
+          maxFileSize: 5 * 1024 * 1024, // 5MB
+          allowedTypes: ["image/*", "application/pdf", "text/*"],
+          enableProgress: true,
+          headers: { 'X-Mock-Provider': 'Basic Mock' }
+        };
+    }
   };
 
   const handleUploadProgress = React.useCallback((progress: any) => {
@@ -118,9 +165,28 @@ Try uploading a file or opening the whiteboard! 🎨`;
                   onChange={(e) => setServerUploadEnabled(e.target.checked)}
                   className="rounded"
                 />
-                Server Upload (Mock)
+                Server Upload
               </label>
             </div>
+
+            {serverUploadEnabled && (
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Provider:
+                </label>
+                <select
+                  value={selectedProvider}
+                  onChange={(e) => setSelectedProvider(e.target.value as any)}
+                  className="px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm"
+                >
+                  <option value="mock">Basic Mock</option>
+                  <option value="googledrive">Google Drive</option>
+                  <option value="dropbox">Dropbox</option>
+                  <option value="icloud">iCloud Drive</option>
+                  <option value="custom">Custom Server</option>
+                </select>
+              </div>
+            )}
           </div>
 
           {uploadProgress.latest && (
@@ -147,7 +213,7 @@ Try uploading a file or opening the whiteboard! 🎨`;
             <p>
               <strong>Server Upload:</strong>{" "}
               {serverUploadEnabled 
-                ? "Enabled (using mock endpoint)" 
+                ? `Enabled (${selectedProvider === 'mock' ? 'basic mock' : selectedProvider} provider)` 
                 : "Disabled (using base64)"}
             </p>
             <p>
@@ -169,7 +235,7 @@ Try uploading a file or opening the whiteboard! 🎨`;
             themeSwitch={mode === "standalone"}
             defaultValue={defaultContent}
             enableServerUpload={serverUploadEnabled}
-            uploadConfig={serverUploadEnabled ? mockUploadConfig : undefined}
+            uploadConfig={serverUploadEnabled ? getUploadConfig(selectedProvider) : undefined}
             onFileUploadProgress={handleUploadProgress}
             onFileUploadSuccess={handleUploadSuccess}
             onFileUploadError={handleUploadError}
@@ -202,6 +268,7 @@ Try uploading a file or opening the whiteboard! 🎨`;
                 <li>• Drag & drop files into editor</li>
                 <li>• Click upload button for files</li>
                 <li>• Toggle server upload to test both modes</li>
+                <li>• Try different providers (Google Drive, Dropbox, iCloud, Custom)</li>
                 <li>• Open whiteboard and draw</li>
                 <li>• Export content as markdown</li>
                 <li>• Import markdown files</li>
