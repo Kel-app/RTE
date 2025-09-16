@@ -10,6 +10,43 @@ function DevApp() {
     "standalone"
   );
   const [defaultContent, setDefaultContent] = React.useState("");
+  const [serverUploadEnabled, setServerUploadEnabled] = React.useState(false);
+  const [uploadProgress, setUploadProgress] = React.useState<Record<string, number>>({});
+
+  // Mock server upload configuration for development
+  const mockUploadConfig = {
+    uploadUrl: "https://httpbin.org/post", // Mock endpoint for testing
+    apiKey: "dev-test-key",
+    maxFileSize: 5 * 1024 * 1024, // 5MB
+    allowedTypes: ["image/*", "application/pdf", "text/*"],
+    enableProgress: true,
+  };
+
+  const handleUploadProgress = React.useCallback((progress: any) => {
+    // In a real app, you'd track progress per file
+    setUploadProgress(prev => ({
+      ...prev,
+      latest: progress.progress
+    }));
+  }, []);
+
+  const handleUploadSuccess = React.useCallback((url: string, file: File) => {
+    console.log("✅ File uploaded successfully:", file.name, "to", url);
+    setUploadProgress(prev => {
+      const newProgress = { ...prev };
+      delete newProgress.latest;
+      return newProgress;
+    });
+  }, []);
+
+  const handleUploadError = React.useCallback((error: Error, file: File) => {
+    console.error("❌ Upload failed:", file.name, error.message);
+    setUploadProgress(prev => {
+      const newProgress = { ...prev };
+      delete newProgress.latest;
+      return newProgress;
+    });
+  }, []);
 
   const testContent = `# Welcome to Kel RTE Dev Environment
 
@@ -72,7 +109,33 @@ Try uploading a file or opening the whiteboard! 🎨`;
             >
               Clear Content
             </button>
+
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={serverUploadEnabled}
+                  onChange={(e) => setServerUploadEnabled(e.target.checked)}
+                  className="rounded"
+                />
+                Server Upload (Mock)
+              </label>
+            </div>
           </div>
+
+          {uploadProgress.latest && (
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="text-sm text-blue-700 dark:text-blue-300 mb-1">
+                Upload Progress: {uploadProgress.latest}%
+              </div>
+              <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
+                <div
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${uploadProgress.latest}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
 
           <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
             <p>
@@ -80,6 +143,12 @@ Try uploading a file or opening the whiteboard! 🎨`;
               {mode === "standalone"
                 ? "Standalone (with theme switch)"
                 : "Integrated (no theme switch)"}
+            </p>
+            <p>
+              <strong>Server Upload:</strong>{" "}
+              {serverUploadEnabled 
+                ? "Enabled (using mock endpoint)" 
+                : "Disabled (using base64)"}
             </p>
             <p>
               <strong>Test Features:</strong> Try file uploads, whiteboard,
@@ -99,6 +168,11 @@ Try uploading a file or opening the whiteboard! 🎨`;
           <RichTextEditor
             themeSwitch={mode === "standalone"}
             defaultValue={defaultContent}
+            enableServerUpload={serverUploadEnabled}
+            uploadConfig={serverUploadEnabled ? mockUploadConfig : undefined}
+            onFileUploadProgress={handleUploadProgress}
+            onFileUploadSuccess={handleUploadSuccess}
+            onFileUploadError={handleUploadError}
           />
         </div>
 
@@ -127,6 +201,7 @@ Try uploading a file or opening the whiteboard! 🎨`;
               <ul className="space-y-1 text-gray-600 dark:text-gray-400">
                 <li>• Drag & drop files into editor</li>
                 <li>• Click upload button for files</li>
+                <li>• Toggle server upload to test both modes</li>
                 <li>• Open whiteboard and draw</li>
                 <li>• Export content as markdown</li>
                 <li>• Import markdown files</li>

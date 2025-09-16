@@ -16,7 +16,7 @@ import applyFontFace from "./apply-font-face";
 import applyColor from "./apply-color";
 import applyMarkCmd from "./apply-mark-cmd";
 import markdownSupport from "./markdown-support";
-import fileUpload from "./file-upload";
+import fileUpload, { FileUploadOptions } from "./file-upload";
 import { createWhiteboardButton } from "./whiteboard";
 
 interface ToolbarProps {
@@ -24,6 +24,7 @@ interface ToolbarProps {
   defaultColor: string;
   className?: string;
   onWhiteboardOpen?: () => void;
+  fileUploadOptions?: FileUploadOptions;
 }
 
 export default function Toolbar({
@@ -31,10 +32,11 @@ export default function Toolbar({
   defaultColor,
   className = "",
   onWhiteboardOpen,
+  fileUploadOptions,
 }: ToolbarProps) {
   const handleFileUpload = () => {
     if (!view) return;
-    const input = fileUpload.createFileUploadButton(view);
+    const input = fileUpload.createFileUploadButton(view, fileUploadOptions);
     input.click();
   };
 

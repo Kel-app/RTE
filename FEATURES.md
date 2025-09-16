@@ -136,6 +136,57 @@ This document outlines all the new features implemented in the Kel Rich Text Edi
 
 ---
 
+### ✅ Issue #20: Server File Upload Support
+
+**Status**: ✅ Complete  
+**Description**: Comprehensive server-side file upload system with cloud storage integration.
+
+**Features**:
+
+- **Environment Configuration**: Configure upload endpoints via environment variables
+- **Multiple Cloud Providers**: Built-in support for AWS S3, Google Cloud, Azure, Cloudinary
+- **Progress Tracking**: Real-time upload progress with callbacks
+- **Error Handling**: Robust error handling with automatic base64 fallback
+- **Type Safety**: Full TypeScript support with comprehensive interfaces
+- **Backward Compatibility**: Seamless integration without breaking existing implementations
+
+**Supported Storage Providers**:
+
+- AWS S3 (Simple Storage Service)
+- Google Cloud Storage
+- Microsoft Azure Blob Storage  
+- Cloudinary (Image and Video Management)
+- Custom server endpoints
+
+**Configuration Options**:
+
+- Upload URL and API key configuration
+- File size and type restrictions
+- Custom headers and authentication
+- Upload timeout and progress tracking
+- Automatic fallback strategies
+
+**Usage Examples**:
+
+```tsx
+// Basic server upload setup
+import { RTE, createCloudStorageConfig } from "@kel-app/rte";
+
+const uploadConfig = createCloudStorageConfig('aws', {
+  uploadUrl: process.env.NEXT_PUBLIC_UPLOAD_URL,
+  apiKey: process.env.NEXT_PUBLIC_API_KEY,
+});
+
+<RTE 
+  themeSwitch={true}
+  enableServerUpload={true}
+  uploadConfig={uploadConfig}
+  onFileUploadSuccess={(url, file) => console.log('Uploaded:', url)}
+/>
+```
+
+---
+
 ## 🛠️ Technical Implementation
 
 ### Architecture Overview
@@ -149,7 +200,8 @@ src/components/
 │   ├── text-style.ts       # ProseMirror mark definitions
 │   ├── fonts.ts           # Font configuration
 │   ├── markdown-support.ts # Markdown import/export
-│   ├── file-upload.ts     # File handling
+│   ├── file-upload.ts     # Enhanced file handling with server upload
+│   ├── server-upload.ts   # Server upload utilities and cloud configs
 │   ├── whiteboard.tsx     # Drawing component
 │   ├── toolbar.tsx        # Unified toolbar
 │   └── rte-enhancements.css # Additional styles

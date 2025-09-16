@@ -22,7 +22,8 @@ import {
   underlineMark,
 } from "./utils/text-style";
 import switchTheme from "./utils/switch-theme";
-import fileUpload, { imageNode, fileNode } from "./utils/file-upload";
+import fileUpload, { imageNode, fileNode, FileUploadOptions } from "./utils/file-upload";
+import { ServerUploadConfig } from "./utils/server-upload";
 import Toolbar from "./utils/toolbar";
 import Whiteboard from "./utils/whiteboard";
 
@@ -38,11 +39,26 @@ import { Moon } from "lucide-react";
 interface RTEProps {
   themeSwitch: boolean;
   defaultValue?: string;
+  /** Server upload configuration for file uploads */
+  uploadConfig?: ServerUploadConfig;
+  /** Enable server-side file uploads. Defaults to false for backward compatibility */
+  enableServerUpload?: boolean;
+  /** Upload event callbacks */
+  onFileUploadStart?: (file: File) => void;
+  onFileUploadProgress?: (progress: { progress: number; loaded: number; total: number }) => void;
+  onFileUploadSuccess?: (url: string, file: File) => void;
+  onFileUploadError?: (error: Error, file: File) => void;
 }
 
 export default function RichTextEditor({
   themeSwitch,
   defaultValue,
+  uploadConfig,
+  enableServerUpload = false,
+  onFileUploadStart,
+  onFileUploadProgress,
+  onFileUploadSuccess,
+  onFileUploadError,
 }: RTEProps) {
   const editorRef = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<EditorView | null>(null);
@@ -50,6 +66,20 @@ export default function RichTextEditor({
   const [defaultColor, setDefaultColor] = useState("#000000");
   const [isWhiteboardOpen, setIsWhiteboardOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  // Prepare file upload options
+  const fileUploadOptions: FileUploadOptions = {
+    serverConfig: uploadConfig,
+    enableServerUpload,
+    onProgress: onFileUploadProgress,
+    onUploadSuccess: (url, file) => {
+      onFileUploadSuccess?.(url, file);
+    },
+    onUploadError: (error, file) => {
+      onFileUploadError?.(error, file);
+    },
+    fallbackToBase64OnError: true, // Always fallback for better UX
+  };
 
   useEffect(() => {
     if (!editorRef.current) return;
@@ -137,7 +167,7 @@ export default function RichTextEditor({
     setView(editorView);
 
     // Setup file upload functionality
-    const cleanup = fileUpload.setupFileDropZone(editorView);
+    const cleanup = fileUpload.setupFileDropZone(editorView, fileUploadOptions);
 
     return () => {
       cleanup();
@@ -195,6 +225,7 @@ export default function RichTextEditor({
             view={view}
             defaultColor={defaultColor}
             onWhiteboardOpen={handleWhiteboardOpen}
+            fileUploadOptions={fileUploadOptions}
           />
         </div>
 
@@ -226,6 +257,7 @@ export default function RichTextEditor({
           view={view}
           defaultColor={defaultColor}
           onWhiteboardOpen={handleWhiteboardOpen}
+          fileUploadOptions={fileUploadOptions}
         />
       </div>
 
