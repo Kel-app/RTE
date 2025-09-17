@@ -1,5 +1,11 @@
 import { EditorView } from "prosemirror-view";
 import { NodeSpec } from "prosemirror-model";
+import { 
+  uploadFileToServer, 
+  fallbackToBase64, 
+  ServerUploadConfig, 
+  UploadProgress 
+} from "./server-upload";
 
 // Define image node for the schema
 export const imageNode: NodeSpec = {
@@ -74,38 +80,79 @@ export const fileNode: NodeSpec = {
   ],
 };
 
+export interface FileUploadOptions {
+  /** Server upload configuration. If not provided, files will be stored as base64 */
+  serverConfig?: ServerUploadConfig;
+  /** Enable server upload. Defaults to false for backward compatibility */
+  enableServerUpload?: boolean;
+  /** Callback for upload progress */
+  onProgress?: (progress: UploadProgress) => void;
+  /** Callback for upload success */
+  onUploadSuccess?: (url: string, file: File) => void;
+  /** Callback for upload error */
+  onUploadError?: (error: Error, file: File) => void;
+  /** Whether to fallback to base64 if server upload fails */
+  fallbackToBase64OnError?: boolean;
+}
+
 // File upload handler
-export function handleFileUpload(view: EditorView, file: File): Promise<void> {
-  return new Promise((resolve, reject) => {
+export function handleFileUpload(
+  view: EditorView, 
+  file: File, 
+  options: FileUploadOptions = {}
+): Promise<void> {
+  return new Promise(async (resolve, reject) => {
     if (!view) {
       reject(new Error("No editor view provided"));
       return;
     }
 
-    const reader = new FileReader();
+    const {
+      serverConfig,
+      enableServerUpload = false,
+      onProgress,
+      onUploadSuccess,
+      onUploadError,
+      fallbackToBase64OnError = true
+    } = options;
 
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-
-      if (file.type.startsWith("image/")) {
-        insertImage(view, result, file.name);
+    try {
+      let fileUrl: string;
+      
+      // Try server upload if enabled and configured
+      if (enableServerUpload && serverConfig) {
+        try {
+          const uploadResponse = await uploadFileToServer(file, serverConfig, onProgress);
+          fileUrl = uploadResponse.url;
+          onUploadSuccess?.(fileUrl, file);
+        } catch (uploadError) {
+          console.warn('Server upload failed:', uploadError);
+          onUploadError?.(uploadError as Error, file);
+          
+          // Fallback to base64 if enabled
+          if (fallbackToBase64OnError) {
+            console.log('Falling back to base64 storage');
+            fileUrl = await fallbackToBase64(file);
+          } else {
+            throw uploadError;
+          }
+        }
       } else {
-        insertFile(view, result, file.name, file.size, file.type);
+        // Use base64 (original behavior)
+        fileUrl = await fallbackToBase64(file);
+      }
+
+      // Insert into editor
+      if (file.type.startsWith("image/")) {
+        insertImage(view, fileUrl, file.name);
+      } else {
+        insertFile(view, fileUrl, file.name, file.size, file.type);
       }
 
       resolve();
-    };
-
-    reader.onerror = () => {
-      reject(new Error("Failed to read file"));
-    };
-
-    if (file.type.startsWith("image/")) {
-      reader.readAsDataURL(file);
-    } else {
-      // For non-image files, we'll create a data URL as well
-      // In a real app, you'd upload to a server and get a URL
-      reader.readAsDataURL(file);
+    } catch (error) {
+      onUploadError?.(error as Error, file);
+      reject(error);
     }
   });
 }
@@ -137,7 +184,10 @@ function insertFile(
 }
 
 // Setup drag and drop for file uploads
-export function setupFileDropZone(view: EditorView): () => void {
+export function setupFileDropZone(
+  view: EditorView, 
+  options: FileUploadOptions = {}
+): () => void {
   if (!view) return () => {};
 
   const editorDom = view.dom;
@@ -163,7 +213,7 @@ export function setupFileDropZone(view: EditorView): () => void {
 
     for (const file of files) {
       try {
-        await handleFileUpload(view, file);
+        await handleFileUpload(view, file, options);
       } catch (error) {
         console.error("Failed to upload file:", error);
       }
@@ -183,7 +233,10 @@ export function setupFileDropZone(view: EditorView): () => void {
 }
 
 // File upload button handler
-export function createFileUploadButton(view: EditorView): HTMLInputElement {
+export function createFileUploadButton(
+  view: EditorView, 
+  options: FileUploadOptions = {}
+): HTMLInputElement {
   const input = document.createElement("input");
   input.type = "file";
   input.multiple = true;
@@ -194,7 +247,7 @@ export function createFileUploadButton(view: EditorView): HTMLInputElement {
 
     for (const file of files) {
       try {
-        await handleFileUpload(view, file);
+        await handleFileUpload(view, file, options);
       } catch (error) {
         console.error("Failed to upload file:", error);
       }

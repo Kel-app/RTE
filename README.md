@@ -26,6 +26,11 @@
 - Image embedding with preview
 - File attachments for documents
 - Multi-file support
+- **🆕 Server-side upload support** with cloud storage integration
+- **🆕 Environment variable configuration** for easy deployment
+- **🆕 Multiple cloud provider support** (AWS, GCP, Azure, Cloudinary)
+- **🆕 Upload progress tracking** and error handling
+- **🆕 Automatic fallback** to base64 if server upload fails
 
 ### 🎨 **Excalidraw Whiteboard Integration**
 
@@ -72,6 +77,32 @@ import "@kel-app/rte/dist/index.css";
 
 export default function MyEditor() {
   return <RTE themeSwitch={true} />;
+}
+```
+
+**With Server Upload (Recommended for Production)**:
+
+```tsx
+"use client";
+import { RTE, createCloudStorageConfig } from "@kel-app/rte";
+import "@kel-app/rte/dist/index.css";
+
+const uploadConfig = createCloudStorageConfig('aws', {
+  uploadUrl: process.env.NEXT_PUBLIC_UPLOAD_URL,
+  apiKey: process.env.NEXT_PUBLIC_API_KEY,
+});
+
+export default function MyEditor() {
+  return (
+    <RTE 
+      themeSwitch={true}
+      enableServerUpload={true}
+      uploadConfig={uploadConfig}
+      onFileUploadSuccess={(url, file) => {
+        console.log('File uploaded:', file.name, 'to', url);
+      }}
+    />
+  );
 }
 ```
 
@@ -232,6 +263,7 @@ npm run dev
 ## 📖 Documentation
 
 - **[Features Guide](FEATURES.md)** - Comprehensive feature documentation
+- **[Server Upload Guide](SERVER_UPLOAD_GUIDE.md)** - Complete server upload configuration
 - **[Changelog](CHANGELOG.md)** - Version history and updates
 - **[Contributing Guide](CONTRIBUTING.md)** - How to contribute
 - **[API Reference](#-api-reference)** - Complete API documentation
@@ -242,13 +274,13 @@ npm run dev
 
 ### Current Limitations
 
-- Files stored as base64 (consider server upload for production)
+- Files stored as base64 by default (server upload now available for production)
 - Some mobile touch interactions could be improved
 - Excalidraw advanced options (e.g., libraries, collaboration) are not yet wired into the UI
 
 ### Roadmap
 
-- [ ] Server-side file upload integration
+- [x] ~~Server-side file upload integration~~ ✅ **Completed**
 - [ ] Advanced whiteboard tools (shapes, text, layers)
 - [ ] Extended markdown support (tables, footnotes)
 - [ ] Plugin system for custom extensions
