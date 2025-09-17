@@ -1,6 +1,6 @@
 {
   "name": "@kel-app/rte",
-  "version": "1.0.1-091425",
+  "version": "1.1.0-091725",
   "description": "Kel's rich text editor (RTE) with markdown, file upload, whiteboard, and advanced formatting features",
   "author": "Kel-app Team",
   "license": "GPL-3.0",
