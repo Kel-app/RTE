@@ -142,6 +142,18 @@ export default function Whiteboard({
             >
               Export SVG
             </button>
+            <button
+              onClick={onCancel}
+              className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white font-medium"
+            >
+              Save to Editor
+            </button>
           </div>
         </div>
 
@@ -171,27 +183,6 @@ export default function Whiteboard({
               },
             }}
           />
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            Use the toolbar above to draw shapes, add text, or insert images
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={onCancel}
-              className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white font-medium"
-            >
-              Save to Editor
-            </button>
-          </div>
         </div>
       </div>
     </div>
