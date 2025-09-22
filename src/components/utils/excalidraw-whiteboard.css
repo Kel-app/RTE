@@ -31,22 +31,22 @@
   display: block;
   position: relative;
   overflow: hidden;
-  overflow: hidden;
   max-width: 90vw;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
 }
-/* Reset any potential CSS conflicts with Excalidraw */
-.excalidraw-whiteboard-canvas * {
+
+/* Reset any potential CSS conflicts with Excalidraw - but be more selective */
+.excalidraw-whiteboard-canvas {
   box-sizing: border-box;
-  width: 100%;
-  flex: 1 1 auto;
 }
 
 .excalidraw-whiteboard-canvas .excalidraw {
   width: 100% !important;
   height: 100% !important;
+  flex: 1 1 auto;
+  min-height: 500px;
 }
 
 .excalidraw-whiteboard-canvas .excalidraw .excalidraw__canvas {

@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import ReactDOM from "react-dom/client";
 import { EditorView } from "prosemirror-view";
 import {
   Excalidraw,
@@ -221,22 +222,43 @@ export function insertWhiteboard(view: EditorView): void {
       const transaction = tr.insert(pos, imageNode);
       view.dispatch(transaction);
     }
-
-    // Clean up modal
-    document.body.removeChild(modalContainer);
   };
 
   const handleCancel = () => {
-    // Clean up modal
-    document.body.removeChild(modalContainer);
+    // This will be handled by the wrapper function
   };
 
-  // Render the whiteboard (you would use React.render in a real app)
-  // For now, this is a placeholder - you'd need to properly render the React component
-  console.log("Opening Excalidraw whiteboard...");
+  // Render the whiteboard component using React
+  const root = ReactDOM.createRoot(modalContainer);
+  
+  // Clean up function that unmounts React and removes DOM element
+  const cleanup = () => {
+    root.unmount();
+    if (document.body.contains(modalContainer)) {
+      document.body.removeChild(modalContainer);
+    }
+  };
 
-  // This is where you'd render the Whiteboard component with React
-  // Example: ReactDOM.render(<Whiteboard onSave={handleSave} onCancel={handleCancel} />, modalContainer);
+  // Wrap handlers to include cleanup
+  const wrappedHandleSave = (imageData: string) => {
+    handleSave(imageData);
+    cleanup();
+  };
+
+  const wrappedHandleCancel = () => {
+    cleanup();
+  };
+
+  // Render the Whiteboard component
+  root.render(
+    React.createElement(Whiteboard, {
+      onSave: wrappedHandleSave,
+      onCancel: wrappedHandleCancel,
+      width: 1000,
+      height: 700,
+      themeMode: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+    })
+  );
 }
 
 // Enhanced whiteboard button creator
