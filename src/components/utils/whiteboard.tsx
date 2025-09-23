@@ -81,11 +81,17 @@ export default function Whiteboard({
       // Convert canvas to base64 image
       const imageData = canvas.toDataURL("image/png");
 
+      // Clean the appState for storage (remove problematic properties)
+      const cleanAppState = { ...currentAppState };
+      delete cleanAppState.collaborators;
+      delete cleanAppState.isLoading;
+      delete cleanAppState.errorMessage;
+
       // Return all data needed for future editing
       onSave?.({
         imageData,
         elements: currentElements,
-        appState: currentAppState,
+        appState: cleanAppState,
         files: currentFiles,
       });
     } catch (error) {
@@ -185,9 +191,15 @@ export default function Whiteboard({
             excalidrawAPI={(api) => setExcalidrawAPI(api)}
             initialData={{
               elements: elements,
-              appState: appState || {
-                gridSize: null,
-                viewBackgroundColor: "#ffffff",
+              appState: {
+                ...{
+                  gridSize: null,
+                  viewBackgroundColor: "#ffffff",
+                  theme: themeMode,
+                  collaborators: new Map(),
+                },
+                ...(appState || {}),
+                // Always ensure these critical properties
                 theme: themeMode,
               },
               files: files || {},

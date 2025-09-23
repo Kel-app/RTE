@@ -178,8 +178,25 @@ export default function RichTextEditor({
               // This is a whiteboard image - open it for editing
               try {
                 const elements = JSON.parse(excalidrawElements);
-                const appState = excalidrawAppState ? JSON.parse(excalidrawAppState) : null;
-                const files = excalidrawFiles ? JSON.parse(excalidrawFiles) : null;
+                let appState = null;
+                let files = null;
+                
+                if (excalidrawAppState) {
+                  appState = JSON.parse(excalidrawAppState);
+                  // Clean up appState to ensure compatibility
+                  if (appState && typeof appState === 'object') {
+                    // Remove properties that might cause issues
+                    delete appState.collaborators;
+                    delete appState.isLoading;
+                    delete appState.errorMessage;
+                    // Ensure theme is consistent
+                    appState.theme = theme === "dark" ? "dark" : "light";
+                  }
+                }
+                
+                if (excalidrawFiles) {
+                  files = JSON.parse(excalidrawFiles);
+                }
                 
                 setWhiteboardInitialData({
                   elements,
