@@ -15,6 +15,12 @@ export const imageNode: NodeSpec = {
     title: { default: null },
     width: { default: null },
     height: { default: null },
+    // Store Excalidraw elements data for whiteboard images
+    excalidrawElements: { default: null },
+    // Store Excalidraw app state for whiteboard images
+    excalidrawAppState: { default: null },
+    // Store Excalidraw files for whiteboard images
+    excalidrawFiles: { default: null },
   },
   inline: true,
   group: "inline",
@@ -28,19 +34,34 @@ export const imageNode: NodeSpec = {
         alt: dom.getAttribute("alt"),
         width: dom.getAttribute("width"),
         height: dom.getAttribute("height"),
+        excalidrawElements: dom.getAttribute("data-excalidraw-elements"),
+        excalidrawAppState: dom.getAttribute("data-excalidraw-appstate"),
+        excalidrawFiles: dom.getAttribute("data-excalidraw-files"),
       }),
     },
   ],
-  toDOM: (node) => [
-    "img",
-    {
+  toDOM: (node) => {
+    const attrs: any = {
       src: node.attrs.src,
       alt: node.attrs.alt,
       title: node.attrs.title,
       width: node.attrs.width,
       height: node.attrs.height,
-    },
-  ],
+    };
+    
+    // Add Excalidraw data attributes if they exist (for whiteboard images)
+    if (node.attrs.excalidrawElements) {
+      attrs["data-excalidraw-elements"] = node.attrs.excalidrawElements;
+    }
+    if (node.attrs.excalidrawAppState) {
+      attrs["data-excalidraw-appstate"] = node.attrs.excalidrawAppState;
+    }
+    if (node.attrs.excalidrawFiles) {
+      attrs["data-excalidraw-files"] = node.attrs.excalidrawFiles;
+    }
+    
+    return ["img", attrs];
+  },
 };
 
 // Define file/attachment node for the schema

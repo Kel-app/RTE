@@ -15,12 +15,23 @@ type ExcalidrawElement = any;
 type AppState = any;
 type ExcalidrawImperativeAPI = any;
 
+interface WhiteboardSaveData {
+  imageData: string;
+  elements: readonly ExcalidrawElement[];
+  appState: AppState;
+  files: any;
+}
+
+export type { WhiteboardSaveData };
+
 interface WhiteboardProps {
-  onSave?: (imageData: string) => void;
+  onSave?: (saveData: WhiteboardSaveData) => void;
   onCancel?: () => void;
   width?: number;
   height?: number;
   initialData?: readonly ExcalidrawElement[];
+  initialAppState?: AppState;
+  initialFiles?: any;
   themeMode?: "light" | "dark";
 }
 
@@ -30,12 +41,16 @@ export default function Whiteboard({
   width = 800,
   height = 600,
   initialData = [],
+  initialAppState,
+  initialFiles,
   themeMode = "light",
 }: WhiteboardProps) {
   const [excalidrawAPI, setExcalidrawAPI] =
     useState<ExcalidrawImperativeAPI | null>(null);
   const [elements, setElements] =
     useState<readonly ExcalidrawElement[]>(initialData);
+  const [appState, setAppState] = useState<AppState | null>(initialAppState || null);
+  const [files, setFiles] = useState<any>(initialFiles || null);
 
   const handleSave = useCallback(async () => {
     if (!excalidrawAPI) return;
@@ -43,7 +58,8 @@ export default function Whiteboard({
     try {
       // Get current elements and app state
       const currentElements = excalidrawAPI.getSceneElements();
-      const appState = excalidrawAPI.getAppState();
+      const currentAppState = excalidrawAPI.getAppState();
+      const currentFiles = excalidrawAPI.getFiles();
 
       if (currentElements.length === 0) {
         alert("Please draw something before saving!");
@@ -54,18 +70,30 @@ export default function Whiteboard({
       const canvas = await exportToCanvas({
         elements: currentElements,
         appState: {
-          ...appState,
+          ...currentAppState,
           exportBackground: true,
           exportWithDarkMode: false,
         },
-        files: excalidrawAPI.getFiles(),
+        files: currentFiles,
         getDimensions: () => ({ width, height }),
       });
 
       // Convert canvas to base64 image
       const imageData = canvas.toDataURL("image/png");
 
-      onSave?.(imageData);
+      // Clean the appState for storage (remove problematic properties)
+      const cleanAppState = { ...currentAppState };
+      delete cleanAppState.collaborators;
+      delete cleanAppState.isLoading;
+      delete cleanAppState.errorMessage;
+
+      // Return all data needed for future editing
+      onSave?.({
+        imageData,
+        elements: currentElements,
+        appState: cleanAppState,
+        files: currentFiles,
+      });
     } catch (error) {
       console.error("Error saving whiteboard:", error);
       alert("Failed to save whiteboard. Please try again.");
@@ -164,13 +192,21 @@ export default function Whiteboard({
             initialData={{
               elements: elements,
               appState: {
-                gridSize: null,
-                viewBackgroundColor: "#ffffff",
+                ...{
+                  gridSize: null,
+                  viewBackgroundColor: "#ffffff",
+                  theme: themeMode,
+                  collaborators: new Map(),
+                },
+                ...(appState || {}),
+                // Always ensure these critical properties
                 theme: themeMode,
               },
+              files: files || {},
             }}
             onChange={(elements, appState) => {
               setElements(elements);
+              setAppState(appState);
             }}
             theme={themeMode}
             UIOptions={{
@@ -196,17 +232,20 @@ export function insertWhiteboard(view: EditorView): void {
   document.body.appendChild(modalContainer);
 
   // Create the whiteboard component
-  const handleSave = (imageData: string) => {
+  const handleSave = (saveData: WhiteboardSaveData) => {
     // Insert the image into the editor
     const { state } = view;
     const { tr } = state;
     const pos = state.selection.from;
 
-    // Create an image node
+    // Create an image node with Excalidraw data for future editing
     const imageNode = state.schema.nodes.image?.create({
-      src: imageData,
+      src: saveData.imageData,
       alt: "Whiteboard drawing",
       title: "Created with Excalidraw",
+      excalidrawElements: JSON.stringify(saveData.elements),
+      excalidrawAppState: JSON.stringify(saveData.appState),
+      excalidrawFiles: JSON.stringify(saveData.files),
     });
 
     if (imageNode) {
@@ -231,8 +270,8 @@ export function insertWhiteboard(view: EditorView): void {
   };
 
   // Wrap handlers to include cleanup
-  const wrappedHandleSave = (imageData: string) => {
-    handleSave(imageData);
+  const wrappedHandleSave = (saveData: WhiteboardSaveData) => {
+    handleSave(saveData);
     cleanup();
   };
 
