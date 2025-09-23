@@ -25,7 +25,7 @@ import switchTheme from "./utils/switch-theme";
 import fileUpload, { imageNode, fileNode, FileUploadOptions } from "./utils/file-upload";
 import { ServerUploadConfig } from "./utils/server-upload";
 import Toolbar from "./utils/toolbar";
-import Whiteboard from "./utils/whiteboard";
+import Whiteboard, { WhiteboardSaveData } from "./utils/whiteboard";
 
 // Styles
 import "prosemirror-view/style/prosemirror.css";
@@ -65,6 +65,11 @@ export default function RichTextEditor({
   const [isFocused, setIsFocused] = useState(false);
   const [defaultColor, setDefaultColor] = useState("#000000");
   const [isWhiteboardOpen, setIsWhiteboardOpen] = useState(false);
+  const [whiteboardInitialData, setWhiteboardInitialData] = useState<{
+    elements?: readonly any[];
+    appState?: any;
+    files?: any;
+  }>({});
   const { theme, setTheme } = useTheme();
 
   // Prepare file upload options
@@ -161,6 +166,38 @@ export default function RichTextEditor({
           }
           return false;
         },
+        click: (view, event) => {
+          // Check if the click is on an image with Excalidraw data
+          const target = event.target as HTMLElement;
+          if (target.tagName === "IMG") {
+            const excalidrawElements = target.getAttribute("data-excalidraw-elements");
+            const excalidrawAppState = target.getAttribute("data-excalidraw-appstate");
+            const excalidrawFiles = target.getAttribute("data-excalidraw-files");
+            
+            if (excalidrawElements) {
+              // This is a whiteboard image - open it for editing
+              try {
+                const elements = JSON.parse(excalidrawElements);
+                const appState = excalidrawAppState ? JSON.parse(excalidrawAppState) : null;
+                const files = excalidrawFiles ? JSON.parse(excalidrawFiles) : null;
+                
+                setWhiteboardInitialData({
+                  elements,
+                  appState,
+                  files,
+                });
+                setIsWhiteboardOpen(true);
+                
+                // Prevent default image behavior
+                event.preventDefault();
+                return true;
+              } catch (error) {
+                console.error("Failed to parse Excalidraw data:", error);
+              }
+            }
+          }
+          return false;
+        },
       },
     });
 
@@ -177,10 +214,12 @@ export default function RichTextEditor({
 
   // Whiteboard handlers
   const handleWhiteboardOpen = () => {
+    // Clear initial data for new whiteboard
+    setWhiteboardInitialData({});
     setIsWhiteboardOpen(true);
   };
 
-  const handleWhiteboardSave = (imageData: string) => {
+  const handleWhiteboardSave = (saveData: WhiteboardSaveData) => {
     if (!view) return;
 
     // Insert the image into the editor
@@ -188,11 +227,14 @@ export default function RichTextEditor({
     const { tr } = state;
     const pos = state.selection.from;
 
-    // Create an image node
+    // Create an image node with Excalidraw data for future editing
     const imageNode = state.schema.nodes.image?.create({
-      src: imageData,
+      src: saveData.imageData,
       alt: "Excalidraw whiteboard",
       title: "Created with Excalidraw",
+      excalidrawElements: JSON.stringify(saveData.elements),
+      excalidrawAppState: JSON.stringify(saveData.appState),
+      excalidrawFiles: JSON.stringify(saveData.files),
     });
 
     if (imageNode) {
@@ -201,10 +243,12 @@ export default function RichTextEditor({
     }
 
     setIsWhiteboardOpen(false);
+    setWhiteboardInitialData({});
   };
 
   const handleWhiteboardCancel = () => {
     setIsWhiteboardOpen(false);
+    setWhiteboardInitialData({});
   };
 
   if (themeSwitch) {
@@ -241,6 +285,9 @@ export default function RichTextEditor({
             onCancel={handleWhiteboardCancel}
             width={1000}
             height={700}
+            initialData={whiteboardInitialData.elements}
+            initialAppState={whiteboardInitialData.appState}
+            initialFiles={whiteboardInitialData.files}
             themeMode={theme === "dark" ? "dark" : "light"}
           />
         )}
@@ -273,6 +320,9 @@ export default function RichTextEditor({
           onCancel={handleWhiteboardCancel}
           width={1000}
           height={700}
+          initialData={whiteboardInitialData.elements}
+          initialAppState={whiteboardInitialData.appState}
+          initialFiles={whiteboardInitialData.files}
           themeMode={theme === "dark" ? "dark" : "light"}
         />
       )}
