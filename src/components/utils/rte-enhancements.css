@@ -75,6 +75,15 @@
   color: #f8fafc;
 }
 
+/* Remove focus outline from ProseMirror to improve cursor visibility */
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror:focus-visible {
+  outline: none;
+}
+
 /* Whiteboard modal overlay */
 .whiteboard-overlay {
   position: fixed;
