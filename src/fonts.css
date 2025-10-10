@@ -1,0 +1,106 @@
+/* Custom web fonts for Kel RTE */
+
+/* Assistant Font */
+@font-face {
+  font-family: 'Assistant';
+  src: url('/Assistant/Assistant-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Assistant';
+  src: url('/Assistant/Assistant-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Assistant';
+  src: url('/Assistant/Assistant-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Assistant';
+  src: url('/Assistant/Assistant-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Cascadia Code Font */
+@font-face {
+  font-family: 'Cascadia Code';
+  src: url('/Cascadia/CascadiaCode-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Comic Shanns Font */
+@font-face {
+  font-family: 'Comic Shanns';
+  src: url('/ComicShanns/ComicShanns-Regular-279a7b317d12eb88de06167bd672b4b4.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Excalifont Font */
+@font-face {
+  font-family: 'Excalifont';
+  src: url('/Excalifont/Excalifont-Regular-349fac6ca4700ffec595a7150a0d1e1d.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Liberation Sans Font */
+@font-face {
+  font-family: 'Liberation Sans';
+  src: url('/Liberation/LiberationSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Lilita Font */
+@font-face {
+  font-family: 'Lilita';
+  src: url('/Lilita/Lilita-Regular-i7dPIFZ9Zz-WBtRtedDbYEF8RXi4EwQ.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Nunito Font */
+@font-face {
+  font-family: 'Nunito';
+  src: url('/Nunito/Nunito-Regular-XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTQ3j6zbXWjgeg.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Virgil Font */
+@font-face {
+  font-family: 'Virgil';
+  src: url('/Virgil/Virgil-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Xiaolai Font */
+@font-face {
+  font-family: 'Xiaolai';
+  src: url('/Xiaolai/Xiaolai-Regular-4f50e5136e136527280bc902c5817561.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
